@@ -35,13 +35,13 @@ class HttpRandomAccessContent extends AbstractRandomAccessStreamContent
 {
     protected long filePointer = 0;
 
-    private final HttpFileObject fileObject;
+    private final HttpFileObject<?> fileObject;
     private final HttpFileSystem fileSystem;
 
     private DataInputStream dis = null;
     private MonitorInputStream mis = null;
 
-    HttpRandomAccessContent(final HttpFileObject fileObject, final RandomAccessMode mode)
+    HttpRandomAccessContent(final HttpFileObject<?> fileObject, final RandomAccessMode mode)
     {
         super(mode);
 

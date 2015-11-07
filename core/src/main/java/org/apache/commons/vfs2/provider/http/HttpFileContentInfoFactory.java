@@ -16,6 +16,8 @@
  */
 package org.apache.commons.vfs2.provider.http;
 
+import java.io.IOException;
+
 import org.apache.commons.vfs2.FileContent;
 import org.apache.commons.vfs2.FileContentInfo;
 import org.apache.commons.vfs2.FileContentInfoFactory;
@@ -35,12 +37,19 @@ public class HttpFileContentInfoFactory implements FileContentInfoFactory
     @Override
     public FileContentInfo create(final FileContent fileContent) throws FileSystemException
     {
-        final HttpFileObject httpFile = (HttpFileObject) FileObjectUtils.getAbstractFileObject(fileContent.getFile());
+        final HttpFileObject<?> httpFile = (HttpFileObject<?>) FileObjectUtils.getAbstractFileObject(fileContent.getFile());
 
         String contentType = null;
         String contentEncoding = null;
 
-        HttpResponse headResponse = httpFile.getHeadResponse();
+        HttpResponse headResponse = null;
+        try 
+        {
+        	headResponse = httpFile.getHeadResponse();
+        } catch (IOException e) 
+        {
+        	throw new FileSystemException(e);
+        }
         
         final Header[] headers = headResponse.getHeaders("content-type");
         if (headers != null && headers.length > 0)

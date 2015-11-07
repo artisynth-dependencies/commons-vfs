@@ -20,7 +20,6 @@ import java.net.HttpURLConnection;
 
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemOptions;
-import org.apache.commons.vfs2.FileType;
 import org.apache.commons.vfs2.UserAuthenticationData;
 import org.apache.commons.vfs2.UserAuthenticator;
 import org.apache.commons.vfs2.util.UserAuthenticatorUtils;
@@ -33,7 +32,6 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.conn.HttpClientConnectionManager;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicAuthCache;
@@ -55,7 +53,8 @@ public final class HttpClientFactory
     {
     }
 
-    public static HttpClient createConnection(final String scheme, final String hostname, final int port,
+    public static HttpConnectionObject createConnection(final String scheme, 
+    		                                  final String hostname, final int port,
                                               final String username, final String password,
                                               final FileSystemOptions fileSystemOptions)
             throws FileSystemException

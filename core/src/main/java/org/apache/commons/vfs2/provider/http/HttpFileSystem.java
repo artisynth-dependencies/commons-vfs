@@ -73,6 +73,6 @@ public class HttpFileSystem
     protected FileObject createFile(final AbstractFileName name)
         throws Exception
     {
-        return new HttpFileObject(name, this);
+        return new HttpFileObject<HttpFileSystem>(name, this);
     }
 }

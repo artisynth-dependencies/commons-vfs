@@ -33,7 +33,6 @@ import org.apache.commons.vfs2.provider.AbstractFileObject;
 import org.apache.commons.vfs2.provider.URLFileName;
 import org.apache.commons.vfs2.util.MonitorInputStream;
 import org.apache.commons.vfs2.util.RandomAccessMode;
-
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
@@ -76,6 +75,7 @@ public class HttpFileObject<FS extends HttpFileSystem> extends AbstractFileObjec
         	}
         }
     }
+    
     private final String urlCharset;
     private final String userAgent;
     private final boolean followRedirect;
@@ -244,7 +244,7 @@ public class HttpFileObject<FS extends HttpFileSystem> extends AbstractFileObjec
         return userAgent;
     }
 
-    HttpResponse getHeadResponse()
+    HttpResponse getHeadResponse() throws IOException
     {
         if (headResponse != null) 
         {
@@ -254,7 +254,7 @@ public class HttpFileObject<FS extends HttpFileSystem> extends AbstractFileObjec
         // Use the HEAD method to probe the file.
         HttpHead method = new HttpHead();
         setupMethod(method);
-        final HttpConnectionObject client = fileSystem.getClient();
+        final HttpConnectionObject client = getAbstractFileSystem().getClient();
         
         // final int status = client.execute(method);
         headResponse = client.execute(method);
