@@ -16,17 +16,16 @@
  */
 package org.apache.commons.vfs2.provider.http;
 
-import java.io.IOException;
-
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HeaderElement;
-import org.apache.commons.httpclient.methods.HeadMethod;
 import org.apache.commons.vfs2.FileContent;
 import org.apache.commons.vfs2.FileContentInfo;
 import org.apache.commons.vfs2.FileContentInfoFactory;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.impl.DefaultFileContentInfo;
 import org.apache.commons.vfs2.util.FileObjectUtils;
+import org.apache.http.Header;
+import org.apache.http.HeaderElement;
+import org.apache.http.HttpResponse;
+import org.apache.http.entity.ContentType;
 
 /**
  * Creates FileContentInfo instances for HTTP.
@@ -41,27 +40,23 @@ public class HttpFileContentInfoFactory implements FileContentInfoFactory
         String contentType = null;
         String contentEncoding = null;
 
-        HeadMethod headMethod;
-        try
+        HttpResponse headResponse = httpFile.getHeadResponse();
+        
+        final Header[] headers = headResponse.getHeaders("content-type");
+        if (headers != null && headers.length > 0)
         {
-            headMethod = httpFile.getHeadMethod();
-        }
-        catch (final IOException e)
-        {
-            throw new FileSystemException(e);
-        }
-        final Header header = headMethod.getResponseHeader("content-type");
-        if (header != null)
-        {
-            final HeaderElement[] element = header.getElements();
+        	Header header = headers[0];
+        	
+        	HeaderElement[] element = header.getElements();
             if (element != null && element.length > 0)
             {
                 contentType = element[0].getName();
             }
         }
 
-        contentEncoding = headMethod.getResponseCharSet();
-
+        ContentType ct = ContentType.getOrDefault(headResponse.getEntity());
+        contentEncoding = ct.getCharset().displayName();
+        
         return new DefaultFileContentInfo(contentType, contentEncoding);
     }
 }

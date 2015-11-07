@@ -16,12 +16,11 @@
  */
 package org.apache.commons.vfs2.provider.http;
 
-import org.apache.commons.httpclient.Cookie;
-import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.commons.vfs2.FileSystem;
 import org.apache.commons.vfs2.FileSystemConfigBuilder;
 import org.apache.commons.vfs2.FileSystemOptions;
 import org.apache.commons.vfs2.UserAuthenticator;
+import org.apache.http.cookie.Cookie;
 
 /**
  * Configuration options for HTTP.
@@ -74,6 +73,7 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
     }
 
     /**
+<<<<<<< HEAD
      * Set the charset used for url encoding.<br>
      *
      * @param opts The FileSystem options.
@@ -96,6 +96,8 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
     }
 
     /**
+=======
+>>>>>>> vfs_2.0_httpcomponents
      * Set the proxy to use for http connection.<br>
      * You have to set the ProxyPort too if you would like to have the proxy really used.
      *

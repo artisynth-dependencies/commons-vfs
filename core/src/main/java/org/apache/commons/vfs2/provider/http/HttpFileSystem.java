@@ -18,9 +18,6 @@ package org.apache.commons.vfs2.provider.http;
 
 import java.util.Collection;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpConnectionManager;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.vfs2.Capability;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemOptions;
@@ -34,9 +31,9 @@ import org.apache.commons.vfs2.provider.GenericFileName;
 public class HttpFileSystem
     extends AbstractFileSystem
 {
-    private final HttpClient client;
-
-    protected HttpFileSystem(final GenericFileName rootName, final HttpClient client,
+    private final HttpConnectionObject client;
+    
+    protected HttpFileSystem(final GenericFileName rootName, final HttpConnectionObject client,
                              final FileSystemOptions fileSystemOptions)
     {
         super(rootName, null, fileSystemOptions);
@@ -52,7 +49,7 @@ public class HttpFileSystem
         caps.addAll(HttpFileProvider.capabilities);
     }
 
-    protected HttpClient getClient()
+    protected HttpConnectionObject getClient()
     {
         return client;
     }
@@ -61,13 +58,10 @@ public class HttpFileSystem
     @Override
     public void closeCommunicationLink()
     {
-        if (getClient() != null)
+    	HttpConnectionObject client = getClient();
+        if (client != null)
         {
-            final HttpConnectionManager mgr = getClient().getHttpConnectionManager();
-            if (mgr instanceof MultiThreadedHttpConnectionManager)
-            {
-                ((MultiThreadedHttpConnectionManager) mgr).shutdown();
-            }
+            client.shutdown();
         }
     }
 

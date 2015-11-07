@@ -57,11 +57,11 @@
     </provider>
     <provider class-name="org.apache.commons.vfs2.provider.http.HttpFileProvider">
         <scheme name="http"/>
-        <if-available class-name="org.apache.commons.httpclient.HttpClient"/>
+        <if-available class-name="org.apache.http.client.HttpClient"/>
     </provider>
     <provider class-name="org.apache.commons.vfs2.provider.https.HttpsFileProvider">
         <scheme name="https"/>
-        <if-available class-name="org.apache.commons.httpclient.HttpClient"/>
+        <if-available class-name="org.apache.http.client.HttpClient"/>
     </provider>
     <provider class-name="org.apache.commons.vfs2.provider.sftp.SftpFileProvider">
         <scheme name="sftp"/>
@@ -71,12 +71,13 @@
     <provider class-name="org.apache.commons.vfs2.provider.res.ResourceFileProvider">
         <scheme name="res"/>
     </provider>
-        <provider class-name="org.apache.commons.vfs2.provider.webdav.WebdavFileProvider">
+    
+    <!--
+    <provider class-name="org.apache.commons.vfs2.provider.webdav.WebdavFileProvider">
         <scheme name="webdav"/>
         <if-available class-name="org.apache.commons.httpclient.HttpClient"/>
         <if-available class-name="org.apache.jackrabbit.webdav.client.methods.DavMethod"/>
     </provider>
-    <!--
     <provider class-name="org.apache.commons.vfs2.provider.svn.SvnFileProvider">
         <scheme name="svnhttps"/>
     </provider>

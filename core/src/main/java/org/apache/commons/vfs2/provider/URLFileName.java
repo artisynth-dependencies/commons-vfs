@@ -16,18 +16,17 @@
  */
 package org.apache.commons.vfs2.provider;
 
-import org.apache.commons.httpclient.URIException;
-import org.apache.commons.httpclient.util.URIUtil;
 import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileType;
 
 /**
  * A file name that represents URL.
+ * @author <a href="http://commons.apache.org/vfs/team-list.html">Commons VFS team</a>
  */
 public class URLFileName extends GenericFileName
 {
-    private static final int BUFFER_SIZE = 250;
+    private static final int BUFFSZ = 250;
 
     private final String queryString;
 
@@ -62,47 +61,15 @@ public class URLFileName extends GenericFileName
      */
     public String getPathQuery()
     {
-        final StringBuilder sb = new StringBuilder(BUFFER_SIZE);
+        final StringBuilder sb = new StringBuilder(BUFFSZ);
         sb.append(getPath());
-        sb.append("?");
-        sb.append(getQueryString());
-
-        return sb.toString();
-    }
-
-    /**
-     * Get the path encoded suitable for url like filesystem e.g. (http, webdav).
-     *
-     * @param charset the charset used for the path encoding
-     * @return The encoded path.
-     * @throws URIException If an error occurs encoding the URI.
-     * @throws FileSystemException If some other error occurs.
-     */
-    public String getPathQueryEncoded(final String charset) throws URIException, FileSystemException
-    {
-        if (getQueryString() == null)
+        String query = getQueryString();
+        if (query != null) 
         {
-            if (charset != null)
-            {
-                return URIUtil.encodePath(getPathDecoded(), charset);
-            }
-            else
-            {
-                return URIUtil.encodePath(getPathDecoded());
-            }
+        	sb.append("?");
+        	sb.append(getQueryString());
         }
 
-        final StringBuilder sb = new StringBuilder(BUFFER_SIZE);
-        if (charset != null)
-        {
-            sb.append(URIUtil.encodePath(getPathDecoded(), charset));
-        }
-        else
-        {
-            sb.append(URIUtil.encodePath(getPathDecoded()));
-        }
-        sb.append("?");
-        sb.append(getQueryString());
         return sb.toString();
     }
 
@@ -147,18 +114,4 @@ public class URLFileName extends GenericFileName
         return super.createURI();
     }
 
-    /**
-     * Encode a URI.
-     * @param charset The character set.
-     * @return The encoded URI
-     * @throws FileSystemException if some other exception occurs.
-     * @throws URIException if an exception occurs encoding the URI.
-     */
-    public String getURIEncoded(final String charset) throws FileSystemException, URIException
-    {
-        final StringBuilder sb = new StringBuilder(BUFFER_SIZE);
-        appendRootUri(sb, true);
-        sb.append(getPathQueryEncoded(charset));
-        return sb.toString();
-    }
 }

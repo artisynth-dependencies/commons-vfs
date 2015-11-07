@@ -16,24 +16,38 @@
  */
 package org.apache.commons.vfs2.provider.http;
 
-import org.apache.commons.httpclient.Cookie;
-import org.apache.commons.httpclient.HostConfiguration;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpConnectionManager;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScope;
-import org.apache.commons.httpclient.methods.HeadMethod;
-import org.apache.commons.httpclient.params.HttpClientParams;
-import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
+import java.net.HttpURLConnection;
+
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemOptions;
+import org.apache.commons.vfs2.FileType;
 import org.apache.commons.vfs2.UserAuthenticationData;
 import org.apache.commons.vfs2.UserAuthenticator;
 import org.apache.commons.vfs2.util.UserAuthenticatorUtils;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.AuthCache;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpHead;
+import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.conn.HttpClientConnectionManager;
+import org.apache.http.cookie.Cookie;
+import org.apache.http.impl.auth.BasicScheme;
+import org.apache.http.impl.client.BasicAuthCache;
+import org.apache.http.impl.client.BasicCookieStore;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.DefaultProxyRoutePlanner;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 
 /**
  * Create a HttpClient instance.
+ *
+ * @author <a href="http://commons.apache.org/vfs/team-list.html">Commons VFS team</a>
  */
 public final class HttpClientFactory
 {
@@ -63,95 +77,121 @@ public final class HttpClientFactory
      * @throws FileSystemException if an error occurs.
      * @since 2.0
      */
-    public static HttpClient createConnection(final HttpFileSystemConfigBuilder builder, final String scheme,
-                                              final String hostname, final int port, final String username,
-                                              final String password, final FileSystemOptions fileSystemOptions)
+    public static HttpConnectionObject createConnection(HttpFileSystemConfigBuilder builder, String scheme,
+                                              String hostname, int port, String username,
+                                              String password, FileSystemOptions fileSystemOptions)
             throws FileSystemException
     {
-        HttpClient client;
+        
+    	
+    	HttpConnectionObject httpConnection = null;
+    	
         try
         {
-            final HttpConnectionManager mgr = new MultiThreadedHttpConnectionManager();
-            final HttpConnectionManagerParams connectionMgrParams = mgr.getParams();
-
-            client = new HttpClient(mgr);
-
-            final HostConfiguration config = new HostConfiguration();
-            config.setHost(hostname, port, scheme);
-
+        	HttpClientBuilder clientBuilder = HttpClients.custom(); // custom builder for client
+        	
+        	// Use pooled connection manager
+        	PoolingHttpClientConnectionManager manager = new PoolingHttpClientConnectionManager();
+        	manager.setMaxTotal(builder.getMaxTotalConnections(fileSystemOptions));
+        	manager.setDefaultMaxPerRoute(builder.getMaxConnectionsPerHost(fileSystemOptions));
+        	clientBuilder.setConnectionManager(manager);
+        	 
+        	// credentials for either proxy or host
+        	HttpClientContext context = new HttpClientContext();   // execution context
+        	CredentialsProvider credentials = new BasicCredentialsProvider();
+        	context.setCredentialsProvider(credentials);
+        	
             if (fileSystemOptions != null)
             {
-                final String proxyHost = builder.getProxyHost(fileSystemOptions);
-                final int proxyPort = builder.getProxyPort(fileSystemOptions);
+            	// proxy and potential authentication
+                String proxyHost = builder.getProxyHost(fileSystemOptions);
+                int proxyPort = builder.getProxyPort(fileSystemOptions);
 
                 if (proxyHost != null && proxyHost.length() > 0 && proxyPort > 0)
                 {
-                    config.setProxy(proxyHost, proxyPort);
-                }
+                	HttpHost proxy = new HttpHost(proxyHost, proxyPort);
+                	DefaultProxyRoutePlanner proxyPlanner = new DefaultProxyRoutePlanner(proxy);
+                	clientBuilder.setRoutePlanner(proxyPlanner);
+                	
+                	UserAuthenticator proxyAuth = builder.getProxyAuthenticator(fileSystemOptions);
+                	if (proxyAuth != null)
+                    {
+                        UserAuthenticationData authData = UserAuthenticatorUtils.authenticate(proxyAuth,
+                            new UserAuthenticationData.Type[]
+                            {
+                                UserAuthenticationData.USERNAME,
+                                UserAuthenticationData.PASSWORD
+                            });
 
-                final UserAuthenticator proxyAuth = builder.getProxyAuthenticator(fileSystemOptions);
-                if (proxyAuth != null)
-                {
-                    final UserAuthenticationData authData = UserAuthenticatorUtils.authenticate(proxyAuth,
-                        new UserAuthenticationData.Type[]
+                        if (authData != null)
                         {
-                            UserAuthenticationData.USERNAME,
-                            UserAuthenticationData.PASSWORD
-                        });
+                            final UsernamePasswordCredentials proxyCreds =
+                                new UsernamePasswordCredentials(
+                                    UserAuthenticatorUtils.toString(UserAuthenticatorUtils.getData(authData,
+                                        UserAuthenticationData.USERNAME, null)),
+                                    UserAuthenticatorUtils.toString(UserAuthenticatorUtils.getData(authData,
+                                        UserAuthenticationData.PASSWORD, null)));
 
-                    if (authData != null)
-                    {
-                        final UsernamePasswordCredentials proxyCreds =
-                            new UsernamePasswordCredentials(
-                                UserAuthenticatorUtils.toString(UserAuthenticatorUtils.getData(authData,
-                                    UserAuthenticationData.USERNAME, null)),
-                                UserAuthenticatorUtils.toString(UserAuthenticatorUtils.getData(authData,
-                                    UserAuthenticationData.PASSWORD, null)));
+                            AuthScope scope = new AuthScope(proxyHost, AuthScope.ANY_PORT);
 
-                        final AuthScope scope = new AuthScope(proxyHost, AuthScope.ANY_PORT);
-                        client.getState().setProxyCredentials(scope, proxyCreds);
-                    }
+                            // add credentials for proxy
+                            credentials.setCredentials(scope, proxyCreds);
 
-                    if (builder.isPreemptiveAuth(fileSystemOptions))
-                    {
-                        final HttpClientParams httpClientParams = new HttpClientParams();
-                        httpClientParams.setAuthenticationPreemptive(true);
-                        client.setParams(httpClientParams);
+                        }
+
+                        if ( builder.isPreemptiveAuth(fileSystemOptions))
+                        {
+                        	// authentication cache
+                        	AuthCache authCache = new BasicAuthCache();
+                        	BasicScheme basicAuth = new BasicScheme();
+                        	authCache.put(proxy, basicAuth);
+                        	context.setAuthCache(authCache);
+                        }
                     }
                 }
 
-                final Cookie[] cookies = builder.getCookies(fileSystemOptions);
+                // session cookies
+                Cookie[] cookies = builder.getCookies(fileSystemOptions);
                 if (cookies != null)
                 {
-                    client.getState().addCookies(cookies);
+                	BasicCookieStore cookieStore = new BasicCookieStore();
+                	cookieStore.addCookies(cookies);
+                	context.setCookieStore(cookieStore);
                 }
             }
-            /**
-             * ConnectionManager set methods must be called after the host & port and proxy host & port
-             * are set in the HostConfiguration. They are all used as part of the key when HttpConnectionManagerParams
-             * tries to locate the host configuration.
-             */
-            connectionMgrParams.setMaxConnectionsPerHost(config, builder.getMaxConnectionsPerHost(fileSystemOptions));
-            connectionMgrParams.setMaxTotalConnections(builder.getMaxTotalConnections(fileSystemOptions));
-
-            connectionMgrParams.setConnectionTimeout(builder.getConnectionTimeout(fileSystemOptions));
-            connectionMgrParams.setSoTimeout(builder.getSoTimeout(fileSystemOptions));
-
-            client.setHostConfiguration(config);
-
+            
+            // host credentials
             if (username != null)
             {
                 final UsernamePasswordCredentials creds =
                     new UsernamePasswordCredentials(username, password);
-                final AuthScope scope = new AuthScope(hostname, AuthScope.ANY_PORT);
-                client.getState().setCredentials(scope, creds);
+                AuthScope scope = new AuthScope(hostname, AuthScope.ANY_PORT);
+                
+                credentials.setCredentials(scope, creds);
             }
+
+
+            // build and execute client
+            HttpClient client = clientBuilder.build();
+            HttpHost host = new HttpHost(hostname, port, scheme);   // target host
+            
+            // connection object
+            httpConnection = new HttpConnectionObject(manager, context, host, client);
+            HttpResponse response = httpConnection.execute(new HttpHead());
+            
+            // check head response
+            int status = response.getStatusLine().getStatusCode();
+            if (status != HttpURLConnection.HTTP_OK)
+            {
+            	throw new FileSystemException("vfs.provider.http/head.error", new Object[]{response});
+            }                
+            
         }
         catch (final Exception exc)
         {
             throw new FileSystemException("vfs.provider.http/connect.error", exc, hostname);
         }
 
-        return client;
+        return httpConnection;
     }
 }

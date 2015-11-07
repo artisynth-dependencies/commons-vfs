@@ -20,10 +20,11 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 
-import org.apache.commons.httpclient.URIException;
 import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileType;
@@ -64,14 +65,13 @@ public class UrlFileObject extends AbstractFileObject<UrlFileSystem>
         }
     }
 
-    protected URL createURL(final FileName name) throws MalformedURLException, FileSystemException, URIException
+    protected URL createURL(final FileName name) throws MalformedURLException, FileSystemException, URISyntaxException
     {
         if (name instanceof URLFileName)
         {
-            final URLFileName urlName = (URLFileName) getName();
-
-            // TODO: charset
-            return new URL(urlName.getURIEncoded(null));
+            URLFileName urlName = (URLFileName) getName();
+            URI uri = new URI(urlName.getURI());
+            return uri.toURL();
         }
         return new URL(getName().getURI());
     }

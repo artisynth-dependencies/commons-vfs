@@ -21,11 +21,12 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 
-import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.provider.AbstractRandomAccessStreamContent;
 import org.apache.commons.vfs2.util.MonitorInputStream;
 import org.apache.commons.vfs2.util.RandomAccessMode;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
 
 /**
  * RandomAccess content using HTTP.
@@ -84,10 +85,13 @@ class HttpRandomAccessContent extends AbstractRandomAccessStreamContent
             return dis;
         }
 
-        final GetMethod getMethod = new GetMethod();
+        final HttpGet getMethod = new HttpGet();
         fileObject.setupMethod(getMethod);
-        getMethod.setRequestHeader("Range", "bytes=" + filePointer + "-");
-        final int status = fileSystem.getClient().executeMethod(getMethod);
+        getMethod.setHeader("Range", "bytes=" + filePointer + "-");
+        
+        HttpResponse response = fileSystem.getClient().execute(getMethod);
+        int status = response.getStatusLine().getStatusCode();
+        
         if (status != HttpURLConnection.HTTP_PARTIAL && status != HttpURLConnection.HTTP_OK)
         {
             throw new FileSystemException("vfs.provider.http/get-range.error",
@@ -96,7 +100,7 @@ class HttpRandomAccessContent extends AbstractRandomAccessStreamContent
                 Integer.valueOf(status));
         }
 
-        mis = new HttpFileObject.HttpInputStream(getMethod);
+        mis = new HttpFileObject.HttpInputStream(response);
         // If the range request was ignored
         if (status == HttpURLConnection.HTTP_OK)
         {

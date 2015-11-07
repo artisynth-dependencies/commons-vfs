@@ -1,5 +1,7 @@
-target/
 .project
-.classpath
 .settings/
 .svn/
+.classpath
+.externalToolBuilders/
+maven-eclipse.xml
+target/

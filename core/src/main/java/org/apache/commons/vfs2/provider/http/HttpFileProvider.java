@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.vfs2.Capability;
 import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileSystem;
@@ -33,7 +32,8 @@ import org.apache.commons.vfs2.provider.GenericFileName;
 import org.apache.commons.vfs2.util.UserAuthenticatorUtils;
 
 /**
- * An HTTP provider that uses commons-httpclient.
+ * An HTTP provider that uses Apache HttpComponents
+ *
  */
 public class HttpFileProvider
     extends AbstractOriginatingFileProvider
@@ -75,7 +75,7 @@ public class HttpFileProvider
         final GenericFileName rootName = (GenericFileName) name;
 
         UserAuthenticationData authData = null;
-        HttpClient httpClient;
+        HttpConnectionObject httpClient;
         try
         {
             authData = UserAuthenticatorUtils.authenticate(fileSystemOptions, AUTHENTICATOR_TYPES);
