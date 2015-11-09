@@ -192,17 +192,6 @@
               <td>Yes</td>
             </tr>
             <tr>
-              <td><a href="WebDAV">WebDAV</a></td>
-              <td>Yes</td>
-              <td>Yes</td>
-              <td>Yes</td>
-              <td>Yes</td>
-              <td>Yes</td>
-              <td>Read/Write</td>
-              <td>Yes</td>
-              <td>Yes</td>
-            </tr>
-            <tr>
               <td><a href="#Zip, Jar and Tar">Zip</a></td>
               <td>No</td>
               <td>No</td>
@@ -544,43 +533,6 @@
                 </li>
                 <li>
                     <code>http://myusername@somehost/index.html</code>
-                </li>
-            </ul>
-        </section>
-
-        <section name="WebDAV">
-
-            <p>Provides access to files on a WebDAV server.</p>
-
-            <p>
-                <b>URI Format</b>
-            </p>
-
-            <p>
-                <code>webdav://[
-                    <i>username</i>[:
-                    <i>password</i>]@]
-                    <i>hostname</i>[:
-                    <i>port</i>][
-                    <i>absolute-path</i>]
-                </code>
-            </p>
-
-            <p>
-                <b>File System Options</b>
-                <ul>
-                  <li><b>versioning</b> true if versioning should be enabled</li>
-                  <li><b>creatorName</b> the user name to be identified with changes to a file. If
-                      not set the user name used to authenticate will be used.</li>
-                </ul>
-            </p>
-
-            <p>
-                <b>Examples</b>
-            </p>
-            <ul>
-                <li>
-                    <code>webdav://somehost:8080/dist</code>
                 </li>
             </ul>
         </section>

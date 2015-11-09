@@ -49,8 +49,6 @@
 <tr><td>sftp</td><td><a href="http://mina.apache.org/sshd-project/index.html">Apache SSHD</a></td><td>-Psftp -Dtest.sftp.uri=sftp://testtest@localhost:123</td></tr>
 <tr><td>tmp</td><td>Local File system</td><td>N/A</td></tr>
 <tr><td>url</td><td>NHttpServer (local adaption of org.apache.http.examples.nio.NHttpServer)<br/>Local File system</td><td>-Phttp -Dtest.http.uri=http://localhost:128</td></tr>
-<tr><td>webdav</td><td><a href="http://jackrabbit.apache.org/standalone-server.html">Apache Jackrabbit Standalone Server</a></td><td>-Pwebdav -Dtest.webdav.uri=webdav://admin@localhost:123/repository/default</td></tr>
-<!-- <tr><td>webdavs</td><td>Apache Jackrabbit Standalone</td><td>-Pwebdav -Dtest.webdav.uri=webdav://admin@localhost:123/repository/default</td></tr> -->
 <tr><td>zip</td><td>Local File Provider</td><td>N/A</td></tr>
 <tr><td>smb (sandbox)</td><td>(not tested)</td><td>-Psmb -Dtest.smb.uri=smb://DOMAIN\User:Pass@host/C$/commons-vfs2/core/target/test-classes/test-data</td></tr>
 </table>

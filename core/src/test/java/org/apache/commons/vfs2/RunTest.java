@@ -42,8 +42,8 @@ public class RunTest
                 "ftps://vfsusr:vfs%2f%25\\te:st@" + ip + "/vfstest");
 
         props.setProperty("test.http.uri", "http://" + ip + "/vfstest");
-        props.setProperty("test.webdav.uri",
-                "webdav://vfsusr:vfs%2f%25\\te:st@" + ip + "/vfstest");
+        //        props.setProperty("test.webdav.uri",
+        //                "webdav://vfsusr:vfs%2f%25\\te:st@" + ip + "/vfstest");
         props.setProperty("test.sftp.uri",
                 "sftp://vfsusr:vfs%2f%25\\te:st@" + ip + "/vfstest");
 

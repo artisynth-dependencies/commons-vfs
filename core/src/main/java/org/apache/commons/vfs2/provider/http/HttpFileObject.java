@@ -278,7 +278,7 @@ public class HttpFileObject<FS extends HttpFileSystem> extends AbstractFileObjec
         
         try {
         	// technically I only need the relative path/query
-        	uri = new URI(file.getPathQuery());
+        	uri = new URI(null, null, file.getPathDecoded(), file.getQueryString(), null);
         } catch (URISyntaxException se) {
         	throw new FileSystemException("Invalid URI syntax", se);
         }

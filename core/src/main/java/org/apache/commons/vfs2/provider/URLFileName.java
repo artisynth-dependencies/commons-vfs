@@ -16,8 +16,13 @@
  */
 package org.apache.commons.vfs2.provider;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import org.apache.commons.vfs2.FileName;
+import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileType;
+import org.apache.http.client.utils.URIBuilder;
 
 /**
  * A file name that represents URL.
@@ -25,92 +30,143 @@ import org.apache.commons.vfs2.FileType;
  */
 public class URLFileName extends GenericFileName
 {
-    private static final int BUFFSZ = 250;
+	private static final int BUFFSZ = 250;
 
-    private final String queryString;
+	private final String queryString;
 
-    public URLFileName(final String scheme,
-                       final String hostName,
-                       final int port,
-                       final int defaultPort,
-                       final String userName,
-                       final String password,
-                       final String path,
-                       final FileType type,
-                       final String queryString)
-    {
-        super(scheme, hostName, port, defaultPort, userName, password, path, type);
-        this.queryString = queryString;
-    }
+	public URLFileName(final String scheme,
+			final String hostName,
+			final int port,
+			final int defaultPort,
+			final String userName,
+			final String password,
+			final String path,
+			final FileType type,
+			final String queryString)
+	{
+		super(scheme, hostName, port, defaultPort, userName, password, path, type);
+		this.queryString = queryString;
+	}
 
-    /**
-     * Get the query string.
-     *
-     * @return the query string part of the filename
-     */
-    public String getQueryString()
-    {
-        return queryString;
-    }
+	/**
+	 * Get the query string.
+	 *
+	 * @return the query string part of the filename
+	 */
+	public String getQueryString()
+	{
+		return queryString;
+	}
 
-    /**
-     * Get the path and query string e.g. /path/servlet?param1=true.
-     *
-     * @return the path and its query string
-     */
-    public String getPathQuery()
-    {
-        final StringBuilder sb = new StringBuilder(BUFFSZ);
-        sb.append(getPath());
-        String query = getQueryString();
-        if (query != null) 
-        {
-        	sb.append("?");
-        	sb.append(getQueryString());
-        }
+	/**
+	 * Get the path and query string e.g. /path/servlet?param1=true.
+	 *
+	 * @return the path and its query string
+	 */
+	public String getPathQuery()
+	{
+		final StringBuilder sb = new StringBuilder(BUFFSZ);
+		sb.append(getPath());
+		String query = getQueryString();
+		if (query != null) 
+		{
+			sb.append("?");
+			sb.append(getQueryString());
+		}
 
-        return sb.toString();
-    }
+		return sb.toString();
+	}
+	
+	/**
+	 * Create a FileName.
+	 * @param absPath The absolute path.
+	 * @param type The FileType.
+	 * @return The FileName
+	 */
+	@Override
+	public FileName createName(final String absPath, final FileType type)
+	{
+		return new URLFileName(getScheme(),
+				getHostName(),
+				getPort(),
+				getDefaultPort(),
+				getUserName(),
+				getPassword(),
+				absPath,
+				type,
+				getQueryString());
+	}
 
-    /**
-     * Create a FileName.
-     * @param absPath The absolute path.
-     * @param type The FileType.
-     * @return The FileName
-     */
-    @Override
-    public FileName createName(final String absPath, final FileType type)
-    {
-        return new URLFileName(getScheme(),
-            getHostName(),
-            getPort(),
-            getDefaultPort(),
-            getUserName(),
-            getPassword(),
-            absPath,
-            type,
-            getQueryString());
-    }
+	private String getQueryEncoded() {
+		final char[] QUERY_RESERVED = {'?','+'};
+		String query = getQueryString();
+		if (query == null) {
+			return null;
+		}
+		
+		return UriParser.encode(query, QUERY_RESERVED);
+	}
+	
+	public String getPathQueryEncoded() throws FileSystemException, URISyntaxException {
+		
+		String path = getPathDecoded();
+		String query = getQueryString();
+		
+		URI uri = new URI(null, null, null,  -1, path, query, null);
+		
+		return uri.toString();
+	}
 
-    /**
-     * Append query string to the uri.
-     *
-     * @return the uri
-     */
-    @Override
-    protected String createURI()
-    {
-        if (getQueryString() != null)
-        {
-            final StringBuilder sb = new StringBuilder(BUFFSZ);
-            sb.append(super.createURI());
-            sb.append("?");
-            sb.append(getQueryString());
+	/**
+	 * Append query string to the uri.
+	 *
+	 * @return the uri
+	 */
+	@Override
+	protected String createURI()
+	{
+		String out = null;
+		
+		//      URI uri;
+		//		try 
+		//		{
+		//			// there seems to be a bug in java.net.URI if there's a colon in the username or password
+		//			uri = new URI(getScheme(), getUserInfo(), getHostName(), getCorrectedPort(), 
+		//					getPath(), getQueryString(), null);
+		//			out = uri.toURL().toString();
+		//		} 
+		//		catch (Exception e) 
+		//		{
+		//		}
+		
+		try {
+			URIBuilder builder = new URIBuilder(super.getRootURI());
+			String path = getPathDecoded();
+			if (path != null) {
+				builder.setPath(path);
+			}
+			String query = getQueryString();
+			if (query != null) {
+				builder.setCustomQuery(query);
+			}
+			out = builder.toString();
+		} catch (Exception e) {
+			StringBuilder builder = new StringBuilder();
+			appendRootUri(builder, true);
+			String path = getPath();
+			if (path != null) {
+				builder.append(path);
+			}
+			String query = getQueryString();
+			if (query != null) {
+				builder.append("?");
+				builder.append(getQueryEncoded());
+			}
+			out = builder.toString();
+		}
+		
+		return out;
 
-            return sb.toString();
-        }
-
-        return super.createURI();
-    }
+	}
 
 }

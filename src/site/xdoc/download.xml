@@ -66,14 +66,6 @@
                 </tr>
                 <tr>
                     <td>
-                        <a href="http://commons.apache.org/httpclient/">Commons Httpclient</a>
-                        Version 3.1.<br/>
-                        Requires <a href="http://commons.apache.org/proper/commons-codec/">Commons Codec</a> Version 1.2.
-                    </td>
-                    <td>WebDAV, HTTP, URI Utils</td>
-                </tr>
-                <tr>
-                    <td>
                         <a href="https://hc.apache.org/">Apache HttpComponents Core</a>
                         Version 4.0 or later
                     </td>
