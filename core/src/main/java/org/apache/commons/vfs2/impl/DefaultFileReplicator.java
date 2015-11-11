@@ -174,7 +174,7 @@ public class DefaultFileReplicator
         }
         catch (final FileSystemException e)
         {
-            final String message = Messages.getString("vfs.impl/delete-temp.warn", file.getName());
+            final String message = Messages.getString("vfs.impl/delete-temp.warn", new Object[]{file.getName()});
             VfsLog.warn(getLogger(), log, message, e);
         }
     }

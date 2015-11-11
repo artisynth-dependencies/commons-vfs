@@ -55,7 +55,7 @@ public class MkdirTask
         try
         {
             final FileObject dir = resolveFile(dirName);
-            final String message = Messages.getString("vfs.tasks/mkdir.create-folder.info", dir);
+            final String message = Messages.getString("vfs.tasks/mkdir.create-folder.info", new Object[]{dir});
             log(message);
             dir.createFolder();
         }

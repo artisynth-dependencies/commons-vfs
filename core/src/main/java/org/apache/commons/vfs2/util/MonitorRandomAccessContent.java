@@ -39,7 +39,6 @@ public class MonitorRandomAccessContent implements RandomAccessContent
      *
      * @throws IOException if subclass throws it.
      */
-    @SuppressWarnings("unused") // IOException is needed because subclasses may need to throw it
     protected void onClose() throws IOException
     {
     }

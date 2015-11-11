@@ -613,7 +613,7 @@ public abstract class AbstractFileSystem
                 }
                 catch (final Exception e)
                 {
-                    final String message = Messages.getString("vfs.provider/notify-listener.warn", file);
+                    final String message = Messages.getString("vfs.provider/notify-listener.warn", new Object[]{file});
                     // getLogger().warn(message, e);
                     VfsLog.warn(getLogger(), LOG, message, e);
                 }

@@ -260,7 +260,7 @@ public abstract class AbstractSyncTask
             if (!srcFile.exists())
             {
                 final String message =
-                    Messages.getString("vfs.tasks/sync.src-file-no-exist.warn", srcFile);
+                    Messages.getString("vfs.tasks/sync.src-file-no-exist.warn", new Object[]{srcFile});
 
                 logOrDie(message, Project.MSG_WARN);
             }

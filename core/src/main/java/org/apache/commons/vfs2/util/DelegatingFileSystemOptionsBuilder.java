@@ -254,7 +254,7 @@ public class DelegatingFileSystemOptionsBuilder
             final Class<?> objectType = PRIMATIVE_TO_OBJECT.get(type.getName());
             if (objectType == null)
             {
-                log.warn(Messages.getString("vfs.provider/config-unexpected-primitive.error", type.getName()));
+                log.warn(Messages.getString("vfs.provider/config-unexpected-primitive.error", new Object[]{type.getName()}));
                 return false;
             }
             type = objectType;

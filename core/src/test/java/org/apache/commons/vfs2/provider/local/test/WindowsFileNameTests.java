@@ -65,7 +65,10 @@ public class WindowsFileNameTests
             try
             {
                 FileName fn = getManager().resolveFile(name).getName();
-                fail("should not accept root " + name);
+                if (fn != null) 
+                {
+                    fail("should not accept root " + name);
+                }
             }
             catch (FileSystemException ex)
             {

@@ -37,6 +37,10 @@ public class UrlTests
     public void testHashFindFiles() throws Exception
     {
         final FileSystemManager fsManager = VFS.getManager();
+        if (fsManager == null) 
+        {
+            fail("Cannot resolve file system manager");
+        }
 
         final FileObject[] foList = getBaseFolder().findFiles(Selectors.SELECT_FILES);
 

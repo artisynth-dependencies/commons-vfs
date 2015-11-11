@@ -36,7 +36,7 @@ public final class FileObjectUtils
      * @return The decorated FileObject or null.
      * @throws FileSystemException if an error occurs.
      */
-    public static AbstractFileObject getAbstractFileObject(final FileObject fileObject) throws FileSystemException
+    public static AbstractFileObject<?> getAbstractFileObject(final FileObject fileObject) throws FileSystemException
     {
         Object searchObject = fileObject;
         while (searchObject instanceof DecoratedFileObject)
@@ -45,7 +45,7 @@ public final class FileObjectUtils
         }
         if (searchObject instanceof AbstractFileObject)
         {
-            return (AbstractFileObject) searchObject;
+            return (AbstractFileObject<?>) searchObject;
         }
         if (searchObject == null)
         {

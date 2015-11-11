@@ -462,7 +462,7 @@ public class DelegateFileObject<AFS extends AbstractFileSystem> extends Abstract
     protected void doRename(final FileObject newFile)
         throws Exception
     {
-        file.moveTo(((DelegateFileObject) newFile).file);
+        file.moveTo(((DelegateFileObject<?>) newFile).file);
     }
 
     /**
