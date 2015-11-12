@@ -24,12 +24,6 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
-import junit.extensions.TestSetup;
-import junit.framework.Protectable;
-import junit.framework.Test;
-import junit.framework.TestResult;
-import junit.framework.TestSuite;
-
 import org.apache.commons.io.FileUtils;
 
 import org.apache.commons.AbstractVfsTestCase;
@@ -39,6 +33,13 @@ import org.apache.commons.vfs2.impl.DefaultFileReplicator;
 import org.apache.commons.vfs2.impl.DefaultFileSystemManager;
 import org.apache.commons.vfs2.impl.PrivilegedFileReplicator;
 import org.apache.commons.vfs2.provider.local.DefaultLocalFileProvider;
+import org.junit.Assert;
+
+import junit.extensions.TestSetup;
+import junit.framework.Protectable;
+import junit.framework.Test;
+import junit.framework.TestResult;
+import junit.framework.TestSuite;
 
 /**
  * The suite of tests for a file system.
@@ -187,8 +188,8 @@ public abstract class AbstractTestSuite
         writeFolder = baseFolder.resolveFile("write-tests");
 
         // Make some assumptions about the read folder
-        assertTrue("Folder does not exist: " + readFolder, readFolder.exists());
-        assertFalse(readFolder.getName().getPath().equals(FileName.ROOT_PATH));
+        Assert.assertTrue("Folder does not exist: " + readFolder, readFolder.exists());
+        Assert.assertFalse(readFolder.getName().getPath().equals(FileName.ROOT_PATH));
 
         // Configure the tests
         final Enumeration<Test> tests = testSuite.tests();
@@ -264,7 +265,7 @@ public abstract class AbstractTestSuite
     {
         if (tempDir.exists())
         {
-            assertTrue(assertMsg + " (" + tempDir.getAbsolutePath() + ")", tempDir.isDirectory() && tempDir.list().length == 0);
+            Assert.assertTrue(assertMsg + " (" + tempDir.getAbsolutePath() + ")", tempDir.isDirectory() && tempDir.list().length == 0);
         }
     }
 

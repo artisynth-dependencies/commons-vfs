@@ -91,7 +91,7 @@ public class VirtualFileSystem extends AbstractFileSystem
         }
 
         // Return a wrapper around the file
-        return new DelegateFileObject(name, this, file);
+        return new DelegateFileObject<VirtualFileSystem>(name, this, file);
     }
 
     /**
@@ -119,7 +119,7 @@ public class VirtualFileSystem extends AbstractFileSystem
             junctions.put(junctionName, targetFile);
 
             // Attach to file
-            final DelegateFileObject junctionFile = (DelegateFileObject) getFileFromCache(junctionName);
+            final DelegateFileObject<?> junctionFile = (DelegateFileObject<?>) getFileFromCache(junctionName);
             if (junctionFile != null)
             {
                 junctionFile.setFile(targetFile);
@@ -132,10 +132,10 @@ public class VirtualFileSystem extends AbstractFileSystem
                  !done && parentName != null;
                  childName = parentName, parentName = (AbstractFileName) parentName.getParent())
             {
-                DelegateFileObject file = (DelegateFileObject) getFileFromCache(parentName);
+                DelegateFileObject<?> file = (DelegateFileObject<?>) getFileFromCache(parentName);
                 if (file == null)
                 {
-                    file = new DelegateFileObject(parentName, this, null);
+                    file = new DelegateFileObject<VirtualFileSystem>(parentName, this, null);
                     putFileToCache(file);
                 }
                 else

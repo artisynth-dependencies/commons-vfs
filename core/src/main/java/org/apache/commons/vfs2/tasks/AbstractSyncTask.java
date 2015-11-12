@@ -349,7 +349,7 @@ public abstract class AbstractSyncTask
         // Check for duplicate source files
         if (destFiles.contains(destFile))
         {
-            final String message = Messages.getString("vfs.tasks/sync.duplicate-source-files.warn", destFile);
+            final String message = Messages.getString("vfs.tasks/sync.duplicate-source-files.warn", new Object[]{destFile});
             logOrDie(message, Project.MSG_WARN);
         }
         else
@@ -380,7 +380,7 @@ public abstract class AbstractSyncTask
         if (!srcFile.isFile())
         {
             final String message =
-                Messages.getString("vfs.tasks/sync.source-not-file.error", srcFile);
+                Messages.getString("vfs.tasks/sync.source-not-file.error", new Object[]{srcFile});
             logOrDie(message, Project.MSG_WARN);
             return;
         }

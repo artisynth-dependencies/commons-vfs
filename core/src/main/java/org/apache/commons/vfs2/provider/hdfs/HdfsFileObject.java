@@ -176,7 +176,7 @@ public class HdfsFileObject extends AbstractFileObject<HdfsFileSystem>
             {
                 return FileType.IMAGINARY;
             }
-            if (stat.isDir())
+            if (stat.isDirectory())
             {
                 return FileType.FOLDER;
             }

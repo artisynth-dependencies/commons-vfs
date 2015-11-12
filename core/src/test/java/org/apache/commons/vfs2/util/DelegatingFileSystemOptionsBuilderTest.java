@@ -28,6 +28,7 @@ import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemOptions;
 import org.apache.commons.vfs2.impl.StandardFileSystemManager;
 import org.apache.commons.vfs2.provider.http.HttpFileSystemConfigBuilder;
+import org.apache.commons.vfs2.provider.sftp.IdentityInfo;
 import org.apache.commons.vfs2.provider.sftp.SftpFileSystemConfigBuilder;
 import org.apache.commons.vfs2.provider.sftp.TrustEveryoneUserInfo;
 import org.junit.After;
@@ -80,14 +81,14 @@ public class DelegatingFileSystemOptionsBuilderTest
         assertEquals("http.proxyHost", HttpFileSystemConfigBuilder.getInstance().getProxyHost(opts), "proxy");
         assertEquals("http.proxyPort", HttpFileSystemConfigBuilder.getInstance().getProxyPort(opts), 8080);
         assertEquals("sftp.userInfo", SftpFileSystemConfigBuilder.getInstance().getUserInfo(opts).getClass(), TrustEveryoneUserInfo.class);
-
-        final File identities[] = SftpFileSystemConfigBuilder.getInstance().getIdentities(opts);
+        
+        final IdentityInfo identities[] = SftpFileSystemConfigBuilder.getInstance().getIdentityInfo(opts);
         assertNotNull("sftp.identities", identities);
         assertEquals("sftp.identities size", identities.length, identityPaths.length);
         for (int iterIdentities = 0; iterIdentities < identities.length; iterIdentities++)
         {
             assertEquals("sftp.identities #" + iterIdentities,
-                identities[iterIdentities].getAbsolutePath(),
+                identities[iterIdentities].getPrivateKey().getAbsolutePath(),
                 new File(identityPaths[iterIdentities]).getAbsolutePath());
         }
     }
