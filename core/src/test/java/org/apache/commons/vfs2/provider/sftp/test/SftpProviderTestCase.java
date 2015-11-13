@@ -483,6 +483,7 @@ public class SftpProviderTestCase extends AbstractProviderTestConfig
                 public OutputStream out = null;
                 public OutputStream err = null;
                 public InputStream in = null;
+                private Socket socket = null;
 
                 @Override
                 public void setInputStream(final InputStream in)
@@ -513,6 +514,7 @@ public class SftpProviderTestCase extends AbstractProviderTestConfig
                 public void start(final Environment env) throws IOException
                 {
                     int code = 0;
+                    
                     if (command.equals("id -G") || command.equals("id -u"))
                     {
                         new PrintStream(out).println(0);
@@ -522,7 +524,7 @@ public class SftpProviderTestCase extends AbstractProviderTestConfig
                         matcher.matches();
                         final int port = Integer.parseInt(matcher.group(1));
 
-                        final Socket socket = new Socket((String) null, port);
+                        socket = new Socket((String) null, port);
 
                         if (out != null)
                         {
@@ -559,6 +561,15 @@ public class SftpProviderTestCase extends AbstractProviderTestConfig
                 @Override
                 public void destroy()
                 {
+                	if (socket != null) 
+                        {
+                		try 
+                                {
+                                    socket.close();
+				} 
+                                catch (IOException e) 
+                                {}
+                        }
                 }
             };
         }
@@ -613,12 +624,12 @@ public class SftpProviderTestCase extends AbstractProviderTestConfig
         thread.start();
     }
 
-
+    @SuppressWarnings("unused")
     private static class SftpAttrs
     {
-        int flags = 0;
+	private int flags = 0;
         private int uid;
-        long size = 0;
+        private long size = 0;
         private int gid;
         private int atime;
         private int permissions;
@@ -664,7 +675,7 @@ public class SftpProviderTestCase extends AbstractProviderTestConfig
         protected void process(final Buffer buffer) throws IOException
         {
             final int rpos = buffer.rpos();
-            final int length = buffer.getInt();
+            buffer.getInt();
             final int type = buffer.getByte();
             final int id = buffer.getInt();
 
@@ -678,7 +689,7 @@ public class SftpProviderTestCase extends AbstractProviderTestConfig
                     // Get the permission
                     final SftpAttrs attrs = new SftpAttrs(buffer);
                     permissions.put(path, attrs.permissions);
-//                    System.err.format("Setting [%s] permission to %o%n", path, attrs.permissions);
+                    //  System.err.format("Setting [%s] permission to %o%n", path, attrs.permissions);
                     break;
                 }
 
@@ -739,9 +750,8 @@ public class SftpProviderTestCase extends AbstractProviderTestConfig
 
             if (_version >= 4)
             {
-                final long size = file.getSize();
-//                String username = session.getUsername();
-                final long lastModif = file.getLastModified();
+                file.getSize();
+                file.getLastModified();
                 if (file.isFile())
                 {
                     buffer.putInt(SSH_FILEXFER_ATTR_PERMISSIONS);
@@ -780,6 +790,9 @@ public class SftpProviderTestCase extends AbstractProviderTestConfig
                 }
             }
         }
-
+    }
+    
+    public SftpFileSystem getFileSystem() {
+    	return filesystem;
     }
 }
