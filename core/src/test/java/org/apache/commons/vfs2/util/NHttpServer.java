@@ -56,8 +56,10 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.HttpStatus;
 import org.apache.http.MethodNotSupportedException;
+import org.apache.http.config.ConnectionConfig;
 import org.apache.http.entity.ContentType;
 import org.apache.http.impl.DefaultConnectionReuseStrategy;
+import org.apache.http.impl.DefaultHttpResponseFactory;
 import org.apache.http.impl.nio.DefaultHttpServerIODispatch;
 import org.apache.http.impl.nio.DefaultNHttpServerConnection;
 import org.apache.http.impl.nio.DefaultNHttpServerConnectionFactory;
@@ -73,17 +75,13 @@ import org.apache.http.nio.protocol.BasicAsyncResponseProducer;
 import org.apache.http.nio.protocol.HttpAsyncExchange;
 import org.apache.http.nio.protocol.HttpAsyncRequestConsumer;
 import org.apache.http.nio.protocol.HttpAsyncRequestHandler;
-import org.apache.http.nio.protocol.HttpAsyncRequestHandlerRegistry;
 import org.apache.http.nio.protocol.HttpAsyncService;
+import org.apache.http.nio.protocol.UriHttpAsyncRequestHandlerMapper;
 import org.apache.http.nio.reactor.IOEventDispatch;
 import org.apache.http.nio.reactor.IOReactorException;
 import org.apache.http.nio.reactor.ListeningIOReactor;
-import org.apache.http.params.CoreConnectionPNames;
-import org.apache.http.params.CoreProtocolPNames;
-import org.apache.http.params.HttpParams;
-import org.apache.http.params.SyncBasicHttpParams;
-import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HttpContext;
+import org.apache.http.protocol.HttpCoreContext;
 import org.apache.http.protocol.HttpProcessor;
 import org.apache.http.protocol.ImmutableHttpProcessor;
 import org.apache.http.protocol.ResponseConnControl;
@@ -160,7 +158,7 @@ public class NHttpServer
 
             } else
             {
-                final NHttpConnection conn = (NHttpConnection) context.getAttribute(ExecutionContext.HTTP_CONNECTION);
+                final NHttpConnection conn = (NHttpConnection) context.getAttribute(HttpCoreContext.HTTP_CONNECTION);
                 response.setStatusCode(HttpStatus.SC_OK);
                 final NFileEntity body = new NFileEntity(file, ContentType.create("text/html"));
                 response.setEntity(body);
@@ -244,11 +242,23 @@ public class NHttpServer
             throw new IllegalArgumentException("No doc root specified.");
         }
         // HTTP parameters for the server
-        final HttpParams params = new SyncBasicHttpParams();
-        params.setIntParameter(CoreConnectionPNames.SO_TIMEOUT, 5000)
-                .setIntParameter(CoreConnectionPNames.SOCKET_BUFFER_SIZE, 8 * 1024)
-                .setBooleanParameter(CoreConnectionPNames.TCP_NODELAY, true)
-                .setParameter(CoreProtocolPNames.ORIGIN_SERVER, "HttpTest/1.1");
+        //        final SocketConfig socketConfig;
+        //        SocketConfig.Builder socketBuilder = SocketConfig.custom();
+        //    	socketBuilder.setSoTimeout(5000);
+        //    	socketBuilder.setRcvBufSize(8*1024);
+        //    	socketBuilder.setTcpNoDelay(true);
+        //    	socketConfig = socketBuilder.build();
+    	
+    	final ConnectionConfig connConfig;
+    	ConnectionConfig.Builder connBuilder = ConnectionConfig.custom();
+    	connConfig = connBuilder.build();
+        
+    	//        final HttpParams params = new SyncBasicHttpParams();
+    	//        params.setIntParameter(CoreConnectionPNames.SO_TIMEOUT, 5000)
+    	//                .setIntParameter(CoreConnectionPNames.SOCKET_BUFFER_SIZE, 8 * 1024)
+    	//                .setBooleanParameter(CoreConnectionPNames.TCP_NODELAY, true)
+    	//                .setParameter(CoreProtocolPNames.ORIGIN_SERVER, "HttpTest/1.1");
+        
         // Create HTTP protocol processing chain
         final HttpProcessor httpproc = new ImmutableHttpProcessor(new HttpResponseInterceptor[]
         {
@@ -258,12 +268,13 @@ public class NHttpServer
                 new ResponseContent(),
                 new ResponseConnControl() });
         // Create request handler registry
-        final HttpAsyncRequestHandlerRegistry reqistry = new HttpAsyncRequestHandlerRegistry();
+        UriHttpAsyncRequestHandlerMapper reqistryMapper = new UriHttpAsyncRequestHandlerMapper();
         // Register the default handler for all URIs
-        reqistry.register("*", new HttpFileHandler(docRoot));
+        reqistryMapper.register("*", new HttpFileHandler(docRoot));
         // Create server-side HTTP protocol handler
+        
         final HttpAsyncService protocolHandler = new HttpAsyncService(httpproc, new DefaultConnectionReuseStrategy(),
-                reqistry, params)
+        		DefaultHttpResponseFactory.INSTANCE, reqistryMapper, null)
         {
 
             @Override
@@ -300,10 +311,10 @@ public class NHttpServer
             final KeyManager[] keymanagers = kmfactory.getKeyManagers();
             final SSLContext sslcontext = SSLContext.getInstance("TLS");
             sslcontext.init(keymanagers, null, null);
-            connFactory = new SSLNHttpServerConnectionFactory(sslcontext, null, params);
+            connFactory = new SSLNHttpServerConnectionFactory(sslcontext, null, connConfig);
         } else
         {
-            connFactory = new DefaultNHttpServerConnectionFactory(params);
+            connFactory = new DefaultNHttpServerConnectionFactory(connConfig);
         }
         // Create server-side I/O event dispatch
         final IOEventDispatch ioEventDispatch = new DefaultHttpServerIODispatch(protocolHandler, connFactory);

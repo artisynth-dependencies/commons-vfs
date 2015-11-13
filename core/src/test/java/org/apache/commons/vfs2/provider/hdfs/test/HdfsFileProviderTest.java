@@ -23,15 +23,10 @@ import java.io.InputStreamReader;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.vfs2.CacheStrategy;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileType;
-import org.apache.commons.vfs2.cache.DefaultFilesCache;
-import org.apache.commons.vfs2.cache.SoftRefFilesCache;
-import org.apache.commons.vfs2.impl.DefaultFileReplicator;
 import org.apache.commons.vfs2.impl.DefaultFileSystemManager;
-import org.apache.commons.vfs2.impl.FileContentInfoFilenameFactory;
 import org.apache.commons.vfs2.provider.hdfs.HdfsFileAttributes;
 import org.apache.commons.vfs2.provider.hdfs.HdfsFileProvider;
 import org.apache.commons.vfs2.util.Os;
@@ -54,7 +49,6 @@ import org.junit.Test;
  * <P>
  * This will only work on systems that Hadoop supports.
  */
-@SuppressWarnings("resource")
 public class HdfsFileProviderTest
 {
 
@@ -96,7 +90,14 @@ public class HdfsFileProviderTest
 
         setUmask(conf);
 
-        cluster = new MiniDFSCluster(PORT, conf, 1, true, true, true, null, null, null, null);
+        
+        MiniDFSCluster.Builder miniDFSBuilder = new MiniDFSCluster.Builder(conf);
+        miniDFSBuilder.format(true);
+        miniDFSBuilder.manageDataDfsDirs(true);
+        miniDFSBuilder.manageNameDfsDirs(true);
+        miniDFSBuilder.nameNodePort(PORT);
+        
+        cluster = miniDFSBuilder.build();
         cluster.waitActive();
 
         // Set up the VFS
