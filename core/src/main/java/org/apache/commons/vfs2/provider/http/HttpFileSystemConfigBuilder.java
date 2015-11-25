@@ -16,11 +16,15 @@
  */
 package org.apache.commons.vfs2.provider.http;
 
+import java.security.KeyStore;
+import java.util.Arrays;
+
 import org.apache.commons.vfs2.FileSystem;
 import org.apache.commons.vfs2.FileSystemConfigBuilder;
 import org.apache.commons.vfs2.FileSystemOptions;
 import org.apache.commons.vfs2.UserAuthenticator;
 import org.apache.http.cookie.Cookie;
+import org.apache.http.ssl.TrustStrategy;
 
 /**
  * Configuration options for HTTP.
@@ -73,7 +77,6 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
     }
 
     /**
-<<<<<<< HEAD
      * Set the charset used for url encoding.<br>
      *
      * @param opts The FileSystem options.
@@ -96,8 +99,6 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
     }
 
     /**
-=======
->>>>>>> vfs_2.0_httpcomponents
      * Set the proxy to use for http connection.<br>
      * You have to set the ProxyPort too if you would like to have the proxy really used.
      *
@@ -356,8 +357,95 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
         final String userAgent = (String) getParam(opts, KEY_USER_AGENT);
         return userAgent != null ? userAgent : DEFAULT_USER_AGENT;
     }
+    
+    /**
+     * Allows setting of a custom trust strategy, allowing to accept custom SSL
+     * certificates
+     * 
+     * @param opts file system options
+     * @param ts custom trust strategy
+     */
+    public void setTrustStrategies(final FileSystemOptions opts, final TrustStrategy[] ts) 
+    {
+    	// add copy of strategies
+    	setParam(opts, "trustStrategies", Arrays.copyOf(ts, ts.length));
+    }
+    
+    /**
+     * Return custom trust-strategies (if defined)
+     * 
+     * @param opts file system options
+     * @return User-provided trust strategy, or null if not defined
+     */
+    public TrustStrategy[] getTrustStrategies(final FileSystemOptions opts) 
+    {
+    	return (TrustStrategy[])getParam(opts, "trustStrategies");
+    }
 
+    /**
+     * Allows setting of a custom trust strategy, allowing to accept custom SSL
+     * certificates
+     * 
+     * @param opts file system options
+     * @param ts custom trust strategy
+     */
+    public void addTrustStrategy(final FileSystemOptions opts, final TrustStrategy ts) 
+    {
+    	// add copy of strategies
+    	TrustStrategy[] strategies = getTrustStrategies(opts);
+    	if (strategies == null) {
+    		strategies = new TrustStrategy[]{ts};
+    	} else {
+    		strategies = Arrays.copyOf(strategies, strategies.length+1);
+    		strategies[strategies.length-1] = ts;
+    	}
+    	setParam(opts, "trustStrategies", strategies);
+    }
 
+    /**
+     * Allows setting of a custom key stores, allowing to accept custom SSL
+     * certificates
+     * 
+     * @param opts file system options
+     * @param ks custom key stores
+     */
+    public void setKeyStores(final FileSystemOptions opts, final KeyStore[] ks) 
+    {
+    	// add copy of strategies
+    	setParam(opts, "keyStores", Arrays.copyOf(ks, ks.length));
+    }
+    
+    /**
+     * Return custom key stores (if defined)
+     * 
+     * @param opts file system options
+     * @return User-provided key store, or null if not defined
+     */
+    public KeyStore[] getKeyStores(final FileSystemOptions opts) 
+    {
+    	return (KeyStore[])getParam(opts, "keyStores");
+    }
+
+    /**
+     * Allows setting of a a custom key store, allowing to accept custom SSL
+     * certificates
+     * 
+     * @param opts file system options
+     * @param ks custom key store
+     */
+    public void addKeyStore(final FileSystemOptions opts, final KeyStore ks) 
+    {
+    	// add copy of strategies
+    	KeyStore[] keystores = getKeyStores(opts);
+    	if (keystores == null) {
+    		keystores = new KeyStore[]{ks};
+    	} else {
+    		keystores = Arrays.copyOf(keystores, keystores.length+1);
+    		keystores[keystores.length-1] = ks;
+    	}
+    	setParam(opts, "keyStores", keystores);
+    }
+    
     @Override
     protected Class<? extends FileSystem> getConfigClass()
     {
