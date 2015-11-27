@@ -17,7 +17,6 @@
 package org.apache.commons.vfs2.provider.http;
 
 import java.security.KeyStore;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import javax.net.ssl.HostnameVerifier;
@@ -527,69 +526,6 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
     }
     
     /**
-     * Enable a given protocol
-     * @param opts file system options
-     * @param protocol protocol to enable
-     */
-    public void enableSSLProtocol(final FileSystemOptions opts, String protocol) {
-    	String[] protocols = getEnabledSSLProtocols(opts);
-    	
-    	if (protocols == null) {
-    		protocols = getDefaultSSLProtocols();
-    	}
-    	
-    	if (protocols == null) {
-    		protocols = new String[]{protocol};
-    		setEnabledSSLProtocols(opts, protocols);
-    		return;
-    	}
-    	
-    	// return if contained
-    	for (String s : protocols) {
-    		if (s.equals(protocol)) {
-    			return;
-    		}
-    	}
-    	
-    	// add protocol
-    	protocols = Arrays.copyOf(protocols, protocols.length+1);
-    	protocols[protocols.length-1] = protocol;
-    	setEnabledSSLProtocols(opts, protocols);
-    }
-    
-    /**
-     * Disable a given protocol
-     * @param opts file system options
-     * @param protocol protocol to disable
-     */
-    public void disableSSLProtocol(final FileSystemOptions opts, String protocol) {
-    	
-    	String[] protocols = getEnabledSSLProtocols(opts);
-    	
-    	if (protocols == null) {
-    		protocols = getDefaultSSLProtocols();
-    	}
-    	
-    	if (protocols == null) {
-    		protocols = new String[]{};
-    		setEnabledSSLProtocols(opts, protocols);
-    		return;
-    	}
-    	
-    	// return if contained
-    	ArrayList<String> parray = new ArrayList<String>(protocols.length);
-    	for (String s : protocols) {
-    		if (!s.equals(protocol)) {
-    			parray.add(s);
-    		}
-    	}
-    	
-    	// set protocols
-    	protocols = parray.toArray(new String[parray.size()]);
-    	setEnabledSSLProtocols(opts, protocols);
-    }
-    
-    /**
      * Attempts to determine the set of supported SSL cipher suites
      * @return supported suites, if available, null otherwise
      */
@@ -640,70 +576,7 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
     public String[] getEnabledSSLCipherSuites(final FileSystemOptions opts) {
     	return (String[])getParam(opts, "sslCipherSuites");    	
     }
-    
-    /**
-     * Enable a given SSL cipher suite
-     * @param opts file system options
-     * @param cipher cipher suite to enable
-     */
-    public void enableSSLCipherSuite(final FileSystemOptions opts, String cipher) {
-    	String[] ciphers = getEnabledSSLCipherSuites(opts);
-    	
-    	if (ciphers == null) {
-    		ciphers = getDefaultSSLCipherSuites();
-    	}
-    	
-    	if (ciphers == null) {
-    		ciphers = new String[]{cipher};
-    		setEnabledSSLCipherSuites(opts, ciphers);
-    		return;
-    	}
-    	
-    	// return if contained
-    	for (String s : ciphers) {
-    		if (s.equals(cipher)) {
-    			return;
-    		}
-    	}
-    	
-    	// add cipher
-    	ciphers = Arrays.copyOf(ciphers, ciphers.length+1);
-    	ciphers[ciphers.length-1] = cipher;
-    	setEnabledSSLCipherSuites(opts, ciphers);
-    }
-    
-    /**
-     * Disable a given cipher suite
-     * @param opts file system options
-     * @param cipher cipher suite to disable
-     */
-    public void disableSSLCipherSuite(final FileSystemOptions opts, String cipher) {
-    	
-    	String[] ciphers = getEnabledSSLCipherSuites(opts);
-    	
-    	if (ciphers == null) {
-    		ciphers = getDefaultSSLCipherSuites();
-    	}
-    	
-    	if (ciphers == null) {
-    		ciphers = new String[]{};
-    		setEnabledSSLCipherSuites(opts, ciphers);
-    		return;
-    	}
-    	
-    	// return if contained
-    	ArrayList<String> carray = new ArrayList<String>(ciphers.length);
-    	for (String s : ciphers) {
-    		if (!s.equals(cipher)) {
-    			carray.add(s);
-    		}
-    	}
-    	
-    	// set protocols
-    	ciphers = carray.toArray(new String[carray.size()]);
-    	setEnabledSSLCipherSuites(opts, ciphers);
-    }
-    
+
     @Override
     protected Class<? extends FileSystem> getConfigClass()
     {

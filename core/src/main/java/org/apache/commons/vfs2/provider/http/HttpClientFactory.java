@@ -106,6 +106,8 @@ public final class HttpClientFactory
 
 			// registry
 			RegistryBuilder<ConnectionSocketFactory> socketRegistryBuilder = RegistryBuilder.create();
+			socketRegistryBuilder.register("http", PlainConnectionSocketFactory.getSocketFactory());
+			socketRegistryBuilder.register("https", SSLConnectionSocketFactory.getSocketFactory());
 			
 			if (fileSystemOptions != null)
 			{
@@ -197,8 +199,7 @@ public final class HttpClientFactory
 						hostVerifier
 						);
 				
-				// add entries in registry
-				socketRegistryBuilder.register("http", PlainConnectionSocketFactory.getSocketFactory());
+				// over-ride socket registry
 				socketRegistryBuilder.register("https", sslsf);
 
 			}
