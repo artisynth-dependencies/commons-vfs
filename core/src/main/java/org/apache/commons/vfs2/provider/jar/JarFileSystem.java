@@ -131,10 +131,10 @@ public class JarFileSystem extends ZipFileSystem
         {
             return Name.CONTENT_TYPE;
         }
-        else if (Name.EXTENSION_INSTALLATION.toString().equals(attrName))
-        {
-            return Name.EXTENSION_INSTALLATION;
-        }
+        //        else if (Name.EXTENSION_INSTALLATION.toString().equals(attrName))
+        //        {
+        //            return Name.EXTENSION_INSTALLATION;
+        //        }
         else if (Name.EXTENSION_LIST.toString().equals(attrName))
         {
             return Name.EXTENSION_LIST;
@@ -147,18 +147,18 @@ public class JarFileSystem extends ZipFileSystem
         {
             return Name.IMPLEMENTATION_TITLE;
         }
-        else if (Name.IMPLEMENTATION_URL.toString().equals(attrName))
-        {
-            return Name.IMPLEMENTATION_URL;
-        }
+        //        else if (Name.IMPLEMENTATION_URL.toString().equals(attrName))
+        //        {
+        //            return Name.IMPLEMENTATION_URL;
+        //        }
         else if (Name.IMPLEMENTATION_VENDOR.toString().equals(attrName))
         {
             return Name.IMPLEMENTATION_VENDOR;
         }
-        else if (Name.IMPLEMENTATION_VENDOR_ID.toString().equals(attrName))
-        {
-            return Name.IMPLEMENTATION_VENDOR_ID;
-        }
+        //        else if (Name.IMPLEMENTATION_VENDOR_ID.toString().equals(attrName))
+        //        {
+        //            return Name.IMPLEMENTATION_VENDOR_ID;
+        //        }
         else if (Name.IMPLEMENTATION_VERSION.toString().equals(attrName))
         {
             return Name.IMPLEMENTATION_VENDOR;

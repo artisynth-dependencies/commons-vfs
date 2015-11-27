@@ -17,13 +17,20 @@
 package org.apache.commons.vfs2.provider.http;
 
 import java.security.KeyStore;
+import java.util.ArrayList;
 import java.util.Arrays;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
 
 import org.apache.commons.vfs2.FileSystem;
 import org.apache.commons.vfs2.FileSystemConfigBuilder;
 import org.apache.commons.vfs2.FileSystemOptions;
 import org.apache.commons.vfs2.UserAuthenticator;
 import org.apache.http.cookie.Cookie;
+import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.TrustStrategy;
 
 /**
@@ -444,6 +451,257 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
     		keystores[keystores.length-1] = ks;
     	}
     	setParam(opts, "keyStores", keystores);
+    }
+    
+    /**
+     * Retrieves the custom HostnameVerifier for SSL connections
+     * 
+     * @param opts file system options
+     * @return the provided HostnameVerifier, or null for default
+     */
+    public HostnameVerifier getSSLHostnameVerifier(final FileSystemOptions opts) {
+    	return (HostnameVerifier)getParam(opts, "sslHostnameVerifier");
+    }
+    
+    /**
+     * Sets a custom HostnameVerifier for SSL connections
+     * 
+     * @param opts file system options
+     * @param hv hostname verifier, or null to use the default
+     */
+    public void setSSLHostnameVerifier(final FileSystemOptions opts, final HostnameVerifier hv) {
+    	setParam(opts, "sslHostnameVerifier", hv);
+    }
+    
+    /**
+     * Attempts to determine the set of supported SSL protocols
+     * @return supported protocols, if available, null otherwise
+     */
+    public String[] getSupportedSSLProtocols() {
+    	try {
+    		SSLContextBuilder contextBuilder = new SSLContextBuilder();
+    		SSLContext context = contextBuilder.build();
+    		SSLSocketFactory sf = context.getSocketFactory();
+    		SSLSocket socket = (SSLSocket) sf.createSocket();
+
+    		return socket.getSupportedProtocols();
+    	} catch(Exception e){}
+    	return null;
+    }
+    
+    /**
+     * Attempts to determine the set of default enabled SSL protocols
+     * @return default protocols, if available, null otherwise
+     */
+    public String[] getDefaultSSLProtocols() {
+    	try {
+    		SSLContextBuilder contextBuilder = new SSLContextBuilder();
+    		SSLContext context = contextBuilder.build();
+    		SSLSocketFactory sf = context.getSocketFactory();
+    		SSLSocket socket = (SSLSocket) sf.createSocket();
+
+    		return socket.getEnabledProtocols();
+    	} catch(Exception e){}
+    	return null;
+    }
+    
+    /**
+     * Get the custom set of enabled SSL protocols
+     * 
+     * @param opts file system options
+     * @return enabled protocols (null for system defaults)
+     */
+    public String[] getEnabledSSLProtocols(final FileSystemOptions opts) {
+    	return (String[])getParam(opts, "sslProtocols");    	
+    }
+    
+    /**
+     * Enable a set of SSL protocols
+     * 
+     * @param opts file system options
+     * @param protocols enabled protocols (null for system defaults)
+     */
+    public void setEnabledSSLProtocols(final FileSystemOptions opts, String[] protocols) {
+    	// add copy of strategies
+    	setParam(opts, "sslProtocols", Arrays.copyOf(protocols, protocols.length));
+    }
+    
+    /**
+     * Enable a given protocol
+     * @param opts file system options
+     * @param protocol protocol to enable
+     */
+    public void enableSSLProtocol(final FileSystemOptions opts, String protocol) {
+    	String[] protocols = getEnabledSSLProtocols(opts);
+    	
+    	if (protocols == null) {
+    		protocols = getDefaultSSLProtocols();
+    	}
+    	
+    	if (protocols == null) {
+    		protocols = new String[]{protocol};
+    		setEnabledSSLProtocols(opts, protocols);
+    		return;
+    	}
+    	
+    	// return if contained
+    	for (String s : protocols) {
+    		if (s.equals(protocol)) {
+    			return;
+    		}
+    	}
+    	
+    	// add protocol
+    	protocols = Arrays.copyOf(protocols, protocols.length+1);
+    	protocols[protocols.length-1] = protocol;
+    	setEnabledSSLProtocols(opts, protocols);
+    }
+    
+    /**
+     * Disable a given protocol
+     * @param opts file system options
+     * @param protocol protocol to disable
+     */
+    public void disableSSLProtocol(final FileSystemOptions opts, String protocol) {
+    	
+    	String[] protocols = getEnabledSSLProtocols(opts);
+    	
+    	if (protocols == null) {
+    		protocols = getDefaultSSLProtocols();
+    	}
+    	
+    	if (protocols == null) {
+    		protocols = new String[]{};
+    		setEnabledSSLProtocols(opts, protocols);
+    		return;
+    	}
+    	
+    	// return if contained
+    	ArrayList<String> parray = new ArrayList<String>(protocols.length);
+    	for (String s : protocols) {
+    		if (!s.equals(protocol)) {
+    			parray.add(s);
+    		}
+    	}
+    	
+    	// set protocols
+    	protocols = parray.toArray(new String[parray.size()]);
+    	setEnabledSSLProtocols(opts, protocols);
+    }
+    
+    /**
+     * Attempts to determine the set of supported SSL cipher suites
+     * @return supported suites, if available, null otherwise
+     */
+    public String[] getSupportedSSLCipherSuites() {
+    	try {
+    		SSLContextBuilder contextBuilder = new SSLContextBuilder();
+    		SSLContext context = contextBuilder.build();
+    		SSLSocketFactory sf = context.getSocketFactory();
+    		SSLSocket socket = (SSLSocket) sf.createSocket();
+
+    		return socket.getSupportedCipherSuites();
+    	} catch(Exception e){}
+    	return null;
+    }
+    
+    /**
+     * Attempts to determine the set of default enabled SSL cipher suites
+     * @return default suites, if available, null otherwise
+     */
+    public String[] getDefaultSSLCipherSuites() {
+    	try {
+    		SSLContextBuilder contextBuilder = new SSLContextBuilder();
+    		SSLContext context = contextBuilder.build();
+    		SSLSocketFactory sf = context.getSocketFactory();
+    		SSLSocket socket = (SSLSocket) sf.createSocket();
+
+    		return socket.getEnabledCipherSuites();
+    	} catch(Exception e){}
+    	return null;
+    }
+    
+    /**
+     * Enable a set of SSL cipher suites
+     * 
+     * @param opts file system options
+     * @param ciphers enabled ciphers (null for system defaults)
+     */
+    public void setEnabledSSLCipherSuites(final FileSystemOptions opts, String[] ciphers) {
+    	setParam(opts, "sslCipherSuites", Arrays.copyOf(ciphers, ciphers.length));
+    }
+    
+    /**
+     * Get the custom set of enabled SSL cipher suites
+     * 
+     * @param opts file system options
+     * @return enabled ciphers (null for system defaults)
+     */
+    public String[] getEnabledSSLCipherSuites(final FileSystemOptions opts) {
+    	return (String[])getParam(opts, "sslCipherSuites");    	
+    }
+    
+    /**
+     * Enable a given SSL cipher suite
+     * @param opts file system options
+     * @param cipher cipher suite to enable
+     */
+    public void enableSSLCipherSuite(final FileSystemOptions opts, String cipher) {
+    	String[] ciphers = getEnabledSSLCipherSuites(opts);
+    	
+    	if (ciphers == null) {
+    		ciphers = getDefaultSSLCipherSuites();
+    	}
+    	
+    	if (ciphers == null) {
+    		ciphers = new String[]{cipher};
+    		setEnabledSSLCipherSuites(opts, ciphers);
+    		return;
+    	}
+    	
+    	// return if contained
+    	for (String s : ciphers) {
+    		if (s.equals(cipher)) {
+    			return;
+    		}
+    	}
+    	
+    	// add cipher
+    	ciphers = Arrays.copyOf(ciphers, ciphers.length+1);
+    	ciphers[ciphers.length-1] = cipher;
+    	setEnabledSSLCipherSuites(opts, ciphers);
+    }
+    
+    /**
+     * Disable a given cipher suite
+     * @param opts file system options
+     * @param cipher cipher suite to disable
+     */
+    public void disableSSLCipherSuite(final FileSystemOptions opts, String cipher) {
+    	
+    	String[] ciphers = getEnabledSSLCipherSuites(opts);
+    	
+    	if (ciphers == null) {
+    		ciphers = getDefaultSSLCipherSuites();
+    	}
+    	
+    	if (ciphers == null) {
+    		ciphers = new String[]{};
+    		setEnabledSSLCipherSuites(opts, ciphers);
+    		return;
+    	}
+    	
+    	// return if contained
+    	ArrayList<String> carray = new ArrayList<String>(ciphers.length);
+    	for (String s : ciphers) {
+    		if (!s.equals(cipher)) {
+    			carray.add(s);
+    		}
+    	}
+    	
+    	// set protocols
+    	ciphers = carray.toArray(new String[carray.size()]);
+    	setEnabledSSLCipherSuites(opts, ciphers);
     }
     
     @Override

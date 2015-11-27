@@ -302,6 +302,7 @@ public class VFSClassLoader extends SecureClassLoader
                         parent.getContent().getCertificates());
                 permCollect = super.getPermissions(parentcs);
                 copyPermissions(permCollect, combi);
+                parent.close();  // prevent leaky resources
             }
 
             return combi;

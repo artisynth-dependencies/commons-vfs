@@ -173,7 +173,8 @@ public class ProviderReadTests extends AbstractProviderTestCase
     /**
      * Tests that FileObjects can be sorted.
      */
-    public void testSort() throws FileSystemException
+    @SuppressWarnings("resource")  // file objects are not actually opened here
+	public void testSort() throws FileSystemException
     {
         final FileInfo fileInfo = buildExpectedStructure();
         final VerifyingFileSelector selector = new VerifyingFileSelector(fileInfo);

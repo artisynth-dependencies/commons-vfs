@@ -19,6 +19,9 @@ package org.apache.commons.vfs2.provider.http;
 import java.net.HttpURLConnection;
 import java.security.KeyStore;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
+
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemOptions;
 import org.apache.commons.vfs2.UserAuthenticationData;
@@ -33,6 +36,9 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.auth.BasicScheme;
@@ -93,17 +99,14 @@ public final class HttpClientFactory
 		{
 			HttpClientBuilder clientBuilder = HttpClients.custom(); // custom builder for client
 
-			// Use pooled connection manager
-			PoolingHttpClientConnectionManager manager = new PoolingHttpClientConnectionManager();
-			manager.setMaxTotal(builder.getMaxTotalConnections(fileSystemOptions));
-			manager.setDefaultMaxPerRoute(builder.getMaxConnectionsPerHost(fileSystemOptions));
-			clientBuilder.setConnectionManager(manager);
-
 			// credentials for either proxy or host
 			HttpClientContext context = new HttpClientContext();   // execution context
 			CredentialsProvider credentials = new BasicCredentialsProvider();
 			context.setCredentialsProvider(credentials);
 
+			// registry
+			RegistryBuilder<ConnectionSocketFactory> socketRegistryBuilder = RegistryBuilder.create();
+			
 			if (fileSystemOptions != null)
 			{
 				// proxy and potential authentication
@@ -182,9 +185,21 @@ public final class HttpClientFactory
 					}
 				}
 
+				String[] ciphers = builder.getEnabledSSLCipherSuites(fileSystemOptions);
+				String[] protocols = builder.getEnabledSSLProtocols(fileSystemOptions);
+				HostnameVerifier hostVerifier = builder.getSSLHostnameVerifier(fileSystemOptions);
+				SSLContext sslcontext = sslbuilder.build();
+				
 				SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(
-						sslbuilder.build());
-				clientBuilder.setSSLSocketFactory(sslsf);  // load custom trust material
+						sslcontext,
+						protocols,
+						ciphers,
+						hostVerifier
+						);
+				
+				// add entries in registry
+				socketRegistryBuilder.register("http", PlainConnectionSocketFactory.getSocketFactory());
+				socketRegistryBuilder.register("https", sslsf);
 
 			}
 
@@ -199,6 +214,13 @@ public final class HttpClientFactory
 			}
 
 
+			// Use pooled connection manager
+			PoolingHttpClientConnectionManager manager = 
+					new PoolingHttpClientConnectionManager(socketRegistryBuilder.build());
+			manager.setMaxTotal(builder.getMaxTotalConnections(fileSystemOptions));
+			manager.setDefaultMaxPerRoute(builder.getMaxConnectionsPerHost(fileSystemOptions));
+			clientBuilder.setConnectionManager(manager);
+			
 			// build and execute client
 			HttpClient client = clientBuilder.build();
 			HttpHost host = new HttpHost(hostname, port, scheme);   // target host
