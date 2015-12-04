@@ -14,19 +14,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.commons.vfs2.provider.https;
+package org.apache.commons.vfs2.provider.webdavs;
 
-import org.apache.commons.vfs2.provider.http.HttpFileProvider;
+import org.apache.commons.vfs2.provider.FileNameParser;
+import org.apache.commons.vfs2.provider.URLFileNameParser;
 
 /**
- * An HTTPS provider that uses apache httpclient.
+ * Implementation for webdavs. set default port to 443.
  */
-public class HttpsFileProvider
-    extends HttpFileProvider
+public class WebdavsFileNameParser extends URLFileNameParser
 {
-    public HttpsFileProvider()
+    private static final int DEFAULT_PORT = 443;
+    private static final WebdavsFileNameParser INSTANCE = new WebdavsFileNameParser();
+
+    public WebdavsFileNameParser()
     {
-        super();
-        setFileNameParser(HttpsFileNameParser.getInstance());
+        super(DEFAULT_PORT);
+    }
+
+    public static FileNameParser getInstance()
+    {
+        return INSTANCE;
     }
 }

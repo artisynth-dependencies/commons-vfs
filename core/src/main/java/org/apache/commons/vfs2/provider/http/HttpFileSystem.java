@@ -31,13 +31,16 @@ import org.apache.commons.vfs2.provider.GenericFileName;
 public class HttpFileSystem
     extends AbstractFileSystem
 {
-    private final HttpConnectionObject client;
+    private final HttpConnectionClientManager clientManager;
+    private final HttpConnectionClient client;  // single client for all communications
     
-    protected HttpFileSystem(final GenericFileName rootName, final HttpConnectionObject client,
+    protected HttpFileSystem(final GenericFileName rootName, 
+                             final HttpConnectionClientManager clientManager,
                              final FileSystemOptions fileSystemOptions)
     {
         super(rootName, null, fileSystemOptions);
-        this.client = client;
+        this.clientManager = clientManager;
+        this.client = clientManager.createClient();
     }
 
     /**
@@ -48,8 +51,12 @@ public class HttpFileSystem
     {
         caps.addAll(HttpFileProvider.capabilities);
     }
+    
+    protected HttpConnectionClientManager getClientManager() {
+        return clientManager;
+    }
 
-    protected HttpConnectionObject getClient()
+    protected HttpConnectionClient getClient()
     {
         return client;
     }
@@ -58,10 +65,10 @@ public class HttpFileSystem
     @Override
     public void closeCommunicationLink()
     {
-    	HttpConnectionObject client = getClient();
-        if (client != null)
+    	HttpConnectionClientManager manager = getClientManager();
+        if (manager != null)
         {
-            client.shutdown();
+            manager.shutdown();
         }
     }
 

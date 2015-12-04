@@ -14,19 +14,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.commons.vfs2.provider.https;
+package org.apache.commons.vfs2.provider.webdavs;
 
-import org.apache.commons.vfs2.provider.http.HttpFileProvider;
+import org.apache.commons.vfs2.provider.webdav.WebdavFileProvider;
 
 /**
- * An HTTPS provider that uses apache httpclient.
+ * A WEBDAVS provider that uses Sardine.
  */
-public class HttpsFileProvider
-    extends HttpFileProvider
+public class WebdavsFileProvider
+    extends WebdavFileProvider
 {
-    public HttpsFileProvider()
+    public WebdavsFileProvider()
     {
         super();
-        setFileNameParser(HttpsFileNameParser.getInstance());
+        setFileNameParser(WebdavsFileNameParser.getInstance());
+    }
+    
+    @Override
+    protected String getUrlScheme() {
+    	return "https";
     }
 }

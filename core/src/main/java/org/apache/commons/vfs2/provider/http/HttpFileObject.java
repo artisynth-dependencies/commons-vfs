@@ -25,7 +25,6 @@ import java.net.URISyntaxException;
 import org.apache.commons.vfs2.FileContentInfoFactory;
 import org.apache.commons.vfs2.FileNotFoundException;
 import org.apache.commons.vfs2.FileSystemException;
-import org.apache.commons.vfs2.FileSystemOptions;
 import org.apache.commons.vfs2.FileType;
 import org.apache.commons.vfs2.RandomAccessContent;
 import org.apache.commons.vfs2.provider.AbstractFileName;
@@ -33,13 +32,13 @@ import org.apache.commons.vfs2.provider.AbstractFileObject;
 import org.apache.commons.vfs2.provider.URLFileName;
 import org.apache.commons.vfs2.util.MonitorInputStream;
 import org.apache.commons.vfs2.util.RandomAccessMode;
+import org.apache.http.Header;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.utils.DateUtils;
-import org.apache.http.Header;
-import org.apache.http.HttpResponse;
 
 /**
  * A file object backed by Apache HttpComponents.
@@ -75,10 +74,6 @@ public class HttpFileObject<FS extends HttpFileSystem> extends AbstractFileObjec
         	}
         }
     }
-    
-    private final String urlCharset;
-    private final String userAgent;
-    private final boolean followRedirect;
 
     private HttpResponse headResponse;
 
@@ -91,10 +86,6 @@ public class HttpFileObject<FS extends HttpFileSystem> extends AbstractFileObjec
                              final HttpFileSystemConfigBuilder builder)
     {
         super(name, fileSystem);
-        final FileSystemOptions fileSystemOptions = fileSystem.getFileSystemOptions();
-        urlCharset = builder.getUrlCharset(fileSystemOptions);
-        userAgent = builder.getUserAgent(fileSystemOptions);
-        followRedirect = builder.getFollowRedirect(fileSystemOptions);
         headResponse = null;
     }
 
@@ -234,16 +225,6 @@ public class HttpFileObject<FS extends HttpFileSystem> extends AbstractFileObjec
         return new HttpFileContentInfoFactory();
     }
 
-    protected boolean getFollowRedirect()
-    {
-        return followRedirect;
-    }
-
-    protected String getUserAgent()
-    {
-        return userAgent;
-    }
-
     HttpResponse getHeadResponse() throws IOException
     {
         if (headResponse != null) 
@@ -254,16 +235,11 @@ public class HttpFileObject<FS extends HttpFileSystem> extends AbstractFileObjec
         // Use the HEAD method to probe the file.
         HttpHead method = new HttpHead();
         setupMethod(method);
-        final HttpConnectionObject client = getAbstractFileSystem().getClient();
+        final HttpConnectionClient client = getAbstractFileSystem().getClient();
         
         // final int status = client.execute(method);
         headResponse = client.execute(method);
         return headResponse;
-    }
-
-    protected String getUrlCharset()
-    {
-        return urlCharset;
     }
 
     /**
@@ -283,8 +259,7 @@ public class HttpFileObject<FS extends HttpFileSystem> extends AbstractFileObjec
         	throw new FileSystemException("Invalid URI syntax", se);
         }
         method.setURI(uri);
-        // method.setFollowRedirects(true);
-        method.addHeader("User-Agent", getUserAgent());
+        
     }
 
     /*

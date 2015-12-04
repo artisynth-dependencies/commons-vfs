@@ -14,85 +14,62 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.commons.vfs2.provider.http;
+package org.apache.commons.vfs2.provider.webdav;
 
-import java.net.HttpURLConnection;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
 import org.apache.commons.vfs2.Capability;
 import org.apache.commons.vfs2.FileName;
+import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystem;
 import org.apache.commons.vfs2.FileSystemConfigBuilder;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemOptions;
 import org.apache.commons.vfs2.UserAuthenticationData;
-import org.apache.commons.vfs2.provider.AbstractOriginatingFileProvider;
 import org.apache.commons.vfs2.provider.GenericFileName;
+import org.apache.commons.vfs2.provider.http.HttpClientManagerFactory;
+import org.apache.commons.vfs2.provider.http.HttpConnectionClient;
+import org.apache.commons.vfs2.provider.http.HttpConnectionClientManager;
+import org.apache.commons.vfs2.provider.http.HttpFileProvider;
 import org.apache.commons.vfs2.util.UserAuthenticatorUtils;
-import org.apache.http.HttpHost;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpHead;
 
 /**
- * An HTTP provider that uses Apache HttpComponents
+ * A provider for WebDAV.
  *
+ * @since 2.0
  */
-public class HttpFileProvider
-    extends AbstractOriginatingFileProvider
+public class WebdavFileProvider
+    extends HttpFileProvider
 {
-    /** Authenticator information. */
-    public static final UserAuthenticationData.Type[] AUTHENTICATOR_TYPES = new UserAuthenticationData.Type[]
-        {
-            UserAuthenticationData.USERNAME, UserAuthenticationData.PASSWORD
-        };
-
-    static final Collection<Capability> capabilities = Collections.unmodifiableCollection(Arrays.asList(new Capability[]
+    /** The capabilities of the WebDAV provider */
+    protected static final Collection<Capability> capabilities =
+            Collections.unmodifiableCollection(Arrays.asList(new Capability[]
     {
+        Capability.CREATE,
+        Capability.DELETE,
+        Capability.RENAME,
         Capability.GET_TYPE,
+        Capability.LIST_CHILDREN,
         Capability.READ_CONTENT,
         Capability.URI,
+        Capability.WRITE_CONTENT,
         Capability.GET_LAST_MODIFIED,
         Capability.ATTRIBUTES,
-        Capability.RANDOM_ACCESS_READ,
+        // Capability.RANDOM_ACCESS_READ,
         Capability.DIRECTORY_READ_CONTENT,
     }));
 
-    /**
-     * Constructs a new provider.
-     */
-    public HttpFileProvider()
+    public WebdavFileProvider()
     {
         super();
-        setFileNameParser(HttpFileNameParser.getInstance());
+
+        setFileNameParser(WebdavFileNameParser.getInstance());
     }
-
-    protected void testConnection( HttpConnectionClient client ) throws FileSystemException
-    {
-
-        // build and execute client
-        HttpResponse response;
-        try
-        {
-            response = client.execute( new HttpHead() );
-        }
-        catch ( Exception e )
-        {
-            throw new FileSystemException( "vfs.provider.http/connect.error", e );
-        }
-
-        // check head response
-        int status = response.getStatusLine().getStatusCode();
-        if ( status != HttpURLConnection.HTTP_OK )
-        {
-            throw new FileSystemException( "vfs.provider.http/head.error", new Object[] { response } );
-        }
-        
-    }
-    
     /**
-     * Creates a {@link FileSystem}.
+     * Internal.  Creates a {@link FileSystem}.
+     * @see org.apache.commons.vfs2.impl.DefaultFileSystemManager#resolveFile(FileObject, String, FileSystemOptions)
      */
     @Override
     protected FileSystem doCreateFileSystem(final FileName name, final FileSystemOptions fileSystemOptions)
@@ -100,46 +77,57 @@ public class HttpFileProvider
     {
         // Create the file system
         final GenericFileName rootName = (GenericFileName) name;
+        final FileSystemOptions fsOpts = fileSystemOptions == null ? new FileSystemOptions() : fileSystemOptions;
 
         UserAuthenticationData authData = null;
         HttpConnectionClientManager httpClientManager;
         try
         {
-            authData = UserAuthenticatorUtils.authenticate(fileSystemOptions, AUTHENTICATOR_TYPES);
+            authData = UserAuthenticatorUtils.authenticate(fsOpts, AUTHENTICATOR_TYPES);
 
             httpClientManager = HttpClientManagerFactory.createConnectionManager(
-                rootName.getScheme(),
+                WebdavFileSystemConfigBuilder.getInstance(),
+                getUrlScheme(),         // for creating host scheme
                 rootName.getHostName(),
                 rootName.getPort(),
                 UserAuthenticatorUtils.toString(UserAuthenticatorUtils.getData(authData,
-                    UserAuthenticationData.USERNAME, UserAuthenticatorUtils.toChar(rootName.getUserName()))),
+                        UserAuthenticationData.USERNAME, UserAuthenticatorUtils.toChar(rootName.getUserName()))),
                 UserAuthenticatorUtils.toString(UserAuthenticatorUtils.getData(authData,
-                    UserAuthenticationData.PASSWORD, UserAuthenticatorUtils.toChar(rootName.getPassword()))),
-                fileSystemOptions);
+                        UserAuthenticationData.PASSWORD, UserAuthenticatorUtils.toChar(rootName.getPassword()))),
+                fsOpts);
             
-            // test connection
-            HttpHost host = new HttpHost( rootName.getHostName(), rootName.getPort(), rootName.getScheme() ); // target host
-            HttpConnectionClient client = httpClientManager.createClient( host );
-            testConnection(client);
+            // Test for successful connection to host
+            HttpConnectionClient client = httpClientManager.createClient();
             
+            try {
+            	testConnection( client );
+            } catch (Exception e) {
+            	// can't connect to "base", but that might not be an issue..
+            	getLogger().warn("warning: webdav cannot connect to " + name + ", but webdav might still work", e);
+            }
         }
         finally
         {
             UserAuthenticatorUtils.cleanup(authData);
         }
 
-        return new HttpFileSystem(rootName, httpClientManager, fileSystemOptions);
+        return new WebdavFileSystem(rootName, httpClientManager, fsOpts);
     }
 
     @Override
     public FileSystemConfigBuilder getConfigBuilder()
     {
-        return HttpFileSystemConfigBuilder.getInstance();
+        return WebdavFileSystemConfigBuilder.getInstance();
     }
+
 
     @Override
     public Collection<Capability> getCapabilities()
     {
         return capabilities;
+    }
+    
+    protected String getUrlScheme() {
+    	return "http";
     }
 }
