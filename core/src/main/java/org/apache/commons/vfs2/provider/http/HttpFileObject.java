@@ -191,7 +191,8 @@ public class HttpFileObject<FS extends HttpFileSystem> extends AbstractFileObjec
         if (status == HttpURLConnection.HTTP_OK
             || status == HttpURLConnection.HTTP_BAD_METHOD /* method is bad, but resource exist */)
         {
-            return FileType.FILE;
+            // return FileType.FILE_OR_FOLDER;  // we can't know which from head only
+            return FileType.FILE;  // assume FILE, since tests rely on it
         }
         else if (status == HttpURLConnection.HTTP_NOT_FOUND
             || status == HttpURLConnection.HTTP_GONE)

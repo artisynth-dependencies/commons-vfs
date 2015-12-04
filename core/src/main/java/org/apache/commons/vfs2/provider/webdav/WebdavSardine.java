@@ -20,6 +20,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -643,5 +644,19 @@ public class WebdavSardine extends SardineImpl implements Sardine
 		return resources;
 	}
     
-
+    @Deprecated
+    @Override
+    public void setCustomProps( String url, Map<String, String> set, List<String> remove )
+        throws IOException
+    {
+        super.setCustomProps( url, set, remove );
+    }
+    
+    @Deprecated
+    @Override
+    public List<DavResource> getResources( String url )
+        throws IOException
+    {
+        return super.getResources( url );
+    }
 }

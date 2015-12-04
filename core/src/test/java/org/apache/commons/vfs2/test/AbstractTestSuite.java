@@ -24,12 +24,10 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
-
 import org.apache.commons.AbstractVfsTestCase;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileObject;
-import org.apache.commons.vfs2.FileType;
 import org.apache.commons.vfs2.impl.DefaultFileReplicator;
 import org.apache.commons.vfs2.impl.DefaultFileSystemManager;
 import org.apache.commons.vfs2.impl.PrivilegedFileReplicator;
@@ -191,14 +189,6 @@ public abstract class AbstractTestSuite
         // Make some assumptions about the read folder
         Assert.assertTrue("Folder does not exist: " + readFolder, readFolder.exists());
         Assert.assertFalse(readFolder.getName().getPath().equals(FileName.ROOT_PATH));
-
-        // Make write folder if not exists
-        if (!writeFolder.exists()) {
-            writeFolder.createFolder();
-        }
-        
-        Assert.assertEquals("Destination is not a folder: " + readFolder, FileType.FOLDER, readFolder.getType());
-        Assert.assertEquals("Destination is not a folder: " + writeFolder, FileType.FOLDER, writeFolder.getType());
         
         // Configure the tests
         final Enumeration<Test> tests = testSuite.tests();
