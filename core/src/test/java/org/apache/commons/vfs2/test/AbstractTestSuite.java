@@ -190,6 +190,18 @@ public abstract class AbstractTestSuite
         Assert.assertTrue("Folder does not exist: " + readFolder, readFolder.exists());
         Assert.assertFalse(readFolder.getName().getPath().equals(FileName.ROOT_PATH));
         
+        // try to create write folder if it doesn't exist (required for Webdav)
+        try 
+        {
+            if (!writeFolder.exists()) 
+            {
+                writeFolder.createFolder();
+            }
+        } catch (Exception e)
+        {
+            // ignore
+        }
+        
         // Configure the tests
         final Enumeration<Test> tests = testSuite.tests();
         while (tests.hasMoreElements())

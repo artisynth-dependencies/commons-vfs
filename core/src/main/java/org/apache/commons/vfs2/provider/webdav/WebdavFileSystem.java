@@ -25,8 +25,6 @@ import org.apache.commons.vfs2.provider.GenericFileName;
 import org.apache.commons.vfs2.provider.http.HttpConnectionClientManager;
 import org.apache.http.HttpHost;
 
-import com.github.sardine.Sardine;
-
 /**
  * A WebDAV file system based on sardine.
  *
@@ -34,7 +32,7 @@ import com.github.sardine.Sardine;
  */
 public class WebdavFileSystem extends AbstractFileSystem
 {
-    private Sardine sardine;
+    private VersionableSardine sardine;
     HttpConnectionClientManager manager;
     
     protected WebdavFileSystem( final GenericFileName rootName, 

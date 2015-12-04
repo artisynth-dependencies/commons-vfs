@@ -28,6 +28,8 @@ import javax.xml.namespace.QName;
 
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.StatusLine;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.AuthState;
 import org.apache.http.auth.NTCredentials;
@@ -57,7 +59,6 @@ import com.github.sardine.DavAcl;
 import com.github.sardine.DavPrincipal;
 import com.github.sardine.DavQuota;
 import com.github.sardine.DavResource;
-import com.github.sardine.Sardine;
 import com.github.sardine.impl.SardineImpl;
 import com.github.sardine.impl.SardineRedirectStrategy;
 import com.github.sardine.impl.handler.MultiStatusResponseHandler;
@@ -90,12 +91,12 @@ import com.github.sardine.util.SardineUtil;
  *
  * @author Antonio
  */
-public class WebdavSardine extends SardineImpl implements Sardine
+public class WebdavSardine extends SardineImpl implements VersionableSardine
 {
 
-	private static final Logger log = Logger.getLogger(DavResource.class.getName());
-	private static final String UTF_8 = "UTF-8";
-	
+    private static final Logger log = Logger.getLogger(DavResource.class.getName());
+    private static final String UTF_8 = "UTF-8";
+
     /**
      * HTTP client implementation
      */
@@ -111,9 +112,9 @@ public class WebdavSardine extends SardineImpl implements Sardine
      * logically related requests.
      */
     protected HttpClientContext context;
-    
+
     protected HttpHost host;
-    
+
     protected ResponseHandler<Multistatus> responseHandler;
 
     /**
@@ -121,8 +122,8 @@ public class WebdavSardine extends SardineImpl implements Sardine
      */
     public WebdavSardine( HttpHost host, HttpClientBuilder clientBuilder )
     {
-    	this(host, clientBuilder, HttpClientContext.create());
-        
+        this(host, clientBuilder, HttpClientContext.create());
+
     }
 
     public HttpClientBuilder getClientBuilder()
@@ -139,15 +140,15 @@ public class WebdavSardine extends SardineImpl implements Sardine
     {
         client = builder.build();
     }
-    
+
     public HttpHost getHost() 
     {
-    	return host;
+        return host;
     }
-    
+
     public void setHost(HttpHost host)
     {
-    	this.host = host;
+        this.host = host;
     }
 
     /**
@@ -184,25 +185,25 @@ public class WebdavSardine extends SardineImpl implements Sardine
         if ( username != null )
         {
             provider.setCredentials(
-                                     new AuthScope( AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM,
-                                                    AuthSchemes.NTLM ),
-                                     new NTCredentials( username, password, workstation, domain ) );
+                                    new AuthScope( AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM,
+                                                   AuthSchemes.NTLM ),
+                                    new NTCredentials( username, password, workstation, domain ) );
             provider.setCredentials(
-                                     new AuthScope( AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM,
-                                                    AuthSchemes.BASIC ),
-                                     new UsernamePasswordCredentials( username, password ) );
+                                    new AuthScope( AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM,
+                                                   AuthSchemes.BASIC ),
+                                    new UsernamePasswordCredentials( username, password ) );
             provider.setCredentials(
-                                     new AuthScope( AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM,
-                                                    AuthSchemes.DIGEST ),
-                                     new UsernamePasswordCredentials( username, password ) );
+                                    new AuthScope( AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM,
+                                                   AuthSchemes.DIGEST ),
+                                    new UsernamePasswordCredentials( username, password ) );
             provider.setCredentials(
-                                     new AuthScope( AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM,
-                                                    AuthSchemes.SPNEGO ),
-                                     new UsernamePasswordCredentials( username, password ) );
+                                    new AuthScope( AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM,
+                                                   AuthSchemes.SPNEGO ),
+                                    new UsernamePasswordCredentials( username, password ) );
             provider.setCredentials(
-                                     new AuthScope( AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM,
-                                                    AuthSchemes.KERBEROS ),
-                                     new UsernamePasswordCredentials( username, password ) );
+                                    new AuthScope( AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM,
+                                                   AuthSchemes.KERBEROS ),
+                                    new UsernamePasswordCredentials( username, password ) );
         }
         return provider;
     }
@@ -293,7 +294,7 @@ public class WebdavSardine extends SardineImpl implements Sardine
     {
         this.context.removeAttribute( HttpClientContext.AUTH_CACHE );
     }
-    
+
     /**
      * Validate the response using the response handler. Aborts the request if there is an exception.
      *
@@ -313,9 +314,9 @@ public class WebdavSardine extends SardineImpl implements Sardine
             HttpHost host = getHost();
             try {
                 if (host != null) {
-                	return this.client.execute( host, request, responseHandler, this.context );
+                    return this.client.execute( host, request, responseHandler, this.context );
                 } else {
-                	return this.client.execute( request, responseHandler, this.context );
+                    return this.client.execute( request, responseHandler, this.context );
                 }
             } catch (IOException e) {
                 System.out.println( "Error on " + request.getMethod() + " " +  host.toHostString() + request.getRequestLine().getUri() );
@@ -350,9 +351,9 @@ public class WebdavSardine extends SardineImpl implements Sardine
             // Execute with no response handler
             HttpHost host = getHost();
             if (host != null) {
-            	return this.client.execute( host, request, this.context );
+                return this.client.execute( host, request, this.context );
             } else {
-            	return this.client.execute(request, context);
+                return this.client.execute(request, context);
             }
         }
         catch ( HttpResponseException e )
@@ -366,7 +367,7 @@ public class WebdavSardine extends SardineImpl implements Sardine
             throw e;
         }
     }
-    
+
     /**
      * 
      * @return
@@ -374,12 +375,10 @@ public class WebdavSardine extends SardineImpl implements Sardine
     protected Set<QName> getDefaultProps() {
 
         HashSet<QName> props = new HashSet<QName>();
-        
-        props.add( QName.valueOf( "response-charset" ) );
-        
+
         return props;
     }
-    
+
     @Override
     /**
      * Request a set of default properties
@@ -387,7 +386,7 @@ public class WebdavSardine extends SardineImpl implements Sardine
     public List<DavResource> list(String url, int depth, boolean allProp) throws IOException
     {
         Set<QName> defaultProps = getDefaultProps();
-        
+
         if (allProp) {
             Propfind body = new Propfind();
             body.setAllprop(new Allprop());
@@ -403,150 +402,150 @@ public class WebdavSardine extends SardineImpl implements Sardine
     {
         this.client.close();
     }
-    
+
     public void setMultiStatusResponseHandler(ResponseHandler<Multistatus> handler) {
-    	responseHandler = handler;
+        responseHandler = handler;
     }
-    
+
     public ResponseHandler<Multistatus> getMultiStatusResponseHandler() {
-    	if (responseHandler != null) {
-    		return responseHandler;
-    	} else {
-    		return new MultiStatusResponseHandler();
-    	}
+        if (responseHandler != null) {
+            return responseHandler;
+        } else {
+            return new MultiStatusResponseHandler();
+        }
     }
-    
-    
+
+
     /*
      * CODE COPIED FROM SARDINEIMPL
      */
     @Override
-	public DavAcl getAcl(String url) throws IOException
-	{
-		HttpPropFind entity = new HttpPropFind(url);
-		entity.setDepth("0");
-		Propfind body = new Propfind();
-		Prop prop = new Prop();
-		prop.setOwner(new Owner());
-		prop.setGroup(new Group());
-		prop.setAcl(new Acl());
-		body.setProp(prop);
-		entity.setEntity(new StringEntity(SardineUtil.toXml(body), UTF_8));
-		Multistatus multistatus = this.execute(entity, getMultiStatusResponseHandler());
-		List<Response> responses = multistatus.getResponse();
-		if (responses.isEmpty())
-		{
-			return null;
-		}
-		else
-		{
-			return new DavAcl(responses.get(0));
-		}
-	}
-    
+    public DavAcl getAcl(String url) throws IOException
+    {
+        HttpPropFind entity = new HttpPropFind(url);
+        entity.setDepth("0");
+        Propfind body = new Propfind();
+        Prop prop = new Prop();
+        prop.setOwner(new Owner());
+        prop.setGroup(new Group());
+        prop.setAcl(new Acl());
+        body.setProp(prop);
+        entity.setEntity(new StringEntity(SardineUtil.toXml(body), UTF_8));
+        Multistatus multistatus = this.execute(entity, getMultiStatusResponseHandler());
+        List<Response> responses = multistatus.getResponse();
+        if (responses.isEmpty())
+        {
+            return null;
+        }
+        else
+        {
+            return new DavAcl(responses.get(0));
+        }
+    }
+
     @Override
-	public List<String> getPrincipalCollectionSet(String url) throws IOException
-	{
-		HttpPropFind entity = new HttpPropFind(url);
-		entity.setDepth("0");
-		Propfind body = new Propfind();
-		Prop prop = new Prop();
-		prop.setPrincipalCollectionSet(new PrincipalCollectionSet());
-		body.setProp(prop);
-		entity.setEntity(new StringEntity(SardineUtil.toXml(body), UTF_8));
-		Multistatus multistatus = this.execute(entity, getMultiStatusResponseHandler());
-		List<Response> responses = multistatus.getResponse();
-		if (responses.isEmpty())
-		{
-			return null;
-		}
-		else
-		{
-			List<String> collections = new ArrayList<String>();
-			for (Response r : responses)
-			{
-				if (r.getPropstat() != null)
-				{
-					for (Propstat propstat : r.getPropstat())
-					{
-						if (propstat.getProp() != null
-								&& propstat.getProp().getPrincipalCollectionSet() != null
-								&& propstat.getProp().getPrincipalCollectionSet().getHref() != null)
-						{
-							collections.addAll(propstat.getProp().getPrincipalCollectionSet().getHref());
-						}
-					}
-				}
-			}
-			return collections;
-		}
-	}
-    
+    public List<String> getPrincipalCollectionSet(String url) throws IOException
+    {
+        HttpPropFind entity = new HttpPropFind(url);
+        entity.setDepth("0");
+        Propfind body = new Propfind();
+        Prop prop = new Prop();
+        prop.setPrincipalCollectionSet(new PrincipalCollectionSet());
+        body.setProp(prop);
+        entity.setEntity(new StringEntity(SardineUtil.toXml(body), UTF_8));
+        Multistatus multistatus = this.execute(entity, getMultiStatusResponseHandler());
+        List<Response> responses = multistatus.getResponse();
+        if (responses.isEmpty())
+        {
+            return null;
+        }
+        else
+        {
+            List<String> collections = new ArrayList<String>();
+            for (Response r : responses)
+            {
+                if (r.getPropstat() != null)
+                {
+                    for (Propstat propstat : r.getPropstat())
+                    {
+                        if (propstat.getProp() != null
+                            && propstat.getProp().getPrincipalCollectionSet() != null
+                            && propstat.getProp().getPrincipalCollectionSet().getHref() != null)
+                        {
+                            collections.addAll(propstat.getProp().getPrincipalCollectionSet().getHref());
+                        }
+                    }
+                }
+            }
+            return collections;
+        }
+    }
+
     @Override
-	public List<DavPrincipal> getPrincipals(String url) throws IOException
-	{
-		HttpPropFind entity = new HttpPropFind(url);
-		entity.setDepth("1");
-		Propfind body = new Propfind();
-		Prop prop = new Prop();
-		prop.setDisplayname(new Displayname());
-		prop.setResourcetype(new Resourcetype());
-		prop.setPrincipalURL(new PrincipalURL());
-		body.setProp(prop);
-		entity.setEntity(new StringEntity(SardineUtil.toXml(body), UTF_8));
-		Multistatus multistatus = this.execute(entity, getMultiStatusResponseHandler());
-		List<Response> responses = multistatus.getResponse();
-		if (responses.isEmpty())
-		{
-			return null;
-		}
-		else
-		{
-			List<DavPrincipal> collections = new ArrayList<DavPrincipal>();
-			for (Response r : responses)
-			{
-				if (r.getPropstat() != null)
-				{
-					for (Propstat propstat : r.getPropstat())
-					{
-						if (propstat.getProp() != null
-								&& propstat.getProp().getResourcetype() != null
-								&& propstat.getProp().getResourcetype().getPrincipal() != null)
-						{
-							collections.add(new DavPrincipal(DavPrincipal.PrincipalType.HREF,
-									r.getHref().get(0),
-									propstat.getProp().getDisplayname().getContent().get(0)));
-						}
-					}
-				}
-			}
-			return collections;
-		}
-	}
-    
+    public List<DavPrincipal> getPrincipals(String url) throws IOException
+    {
+        HttpPropFind entity = new HttpPropFind(url);
+        entity.setDepth("1");
+        Propfind body = new Propfind();
+        Prop prop = new Prop();
+        prop.setDisplayname(new Displayname());
+        prop.setResourcetype(new Resourcetype());
+        prop.setPrincipalURL(new PrincipalURL());
+        body.setProp(prop);
+        entity.setEntity(new StringEntity(SardineUtil.toXml(body), UTF_8));
+        Multistatus multistatus = this.execute(entity, getMultiStatusResponseHandler());
+        List<Response> responses = multistatus.getResponse();
+        if (responses.isEmpty())
+        {
+            return null;
+        }
+        else
+        {
+            List<DavPrincipal> collections = new ArrayList<DavPrincipal>();
+            for (Response r : responses)
+            {
+                if (r.getPropstat() != null)
+                {
+                    for (Propstat propstat : r.getPropstat())
+                    {
+                        if (propstat.getProp() != null
+                            && propstat.getProp().getResourcetype() != null
+                            && propstat.getProp().getResourcetype().getPrincipal() != null)
+                        {
+                            collections.add(new DavPrincipal(DavPrincipal.PrincipalType.HREF,
+                                                             r.getHref().get(0),
+                                                             propstat.getProp().getDisplayname().getContent().get(0)));
+                        }
+                    }
+                }
+            }
+            return collections;
+        }
+    }
+
     @Override
-	public DavQuota getQuota(String url) throws IOException
-	{
-		HttpPropFind entity = new HttpPropFind(url);
-		entity.setDepth("0");
-		Propfind body = new Propfind();
-		Prop prop = new Prop();
-		prop.setQuotaAvailableBytes(new QuotaAvailableBytes());
-		prop.setQuotaUsedBytes(new QuotaUsedBytes());
-		body.setProp(prop);
-		entity.setEntity(new StringEntity(SardineUtil.toXml(body), UTF_8));
-		Multistatus multistatus = this.execute(entity, getMultiStatusResponseHandler());
-		List<Response> responses = multistatus.getResponse();
-		if (responses.isEmpty())
-		{
-			return null;
-		}
-		else
-		{
-			return new DavQuota(responses.get(0));
-		}
-	}
-    
+    public DavQuota getQuota(String url) throws IOException
+    {
+        HttpPropFind entity = new HttpPropFind(url);
+        entity.setDepth("0");
+        Propfind body = new Propfind();
+        Prop prop = new Prop();
+        prop.setQuotaAvailableBytes(new QuotaAvailableBytes());
+        prop.setQuotaUsedBytes(new QuotaUsedBytes());
+        body.setProp(prop);
+        entity.setEntity(new StringEntity(SardineUtil.toXml(body), UTF_8));
+        Multistatus multistatus = this.execute(entity, getMultiStatusResponseHandler());
+        List<Response> responses = multistatus.getResponse();
+        if (responses.isEmpty())
+        {
+            return null;
+        }
+        else
+        {
+            return new DavQuota(responses.get(0));
+        }
+    }
+
     @Override
     protected List<DavResource> list(String url, int depth, Propfind body) throws IOException
     {
@@ -556,94 +555,94 @@ public class WebdavSardine extends SardineImpl implements Sardine
         Multistatus multistatus = this.execute(entity, getMultiStatusResponseHandler());
         List<Response> responses = multistatus.getResponse();
         List<DavResource> resources = new ArrayList<DavResource>(responses.size());
-		for (Response response : responses)
-		{
-			try
-			{
-				resources.add(new DavResource(response));
-			}
-			catch (URISyntaxException e)
-			{
-				log.warning(String.format("Ignore resource with invalid URI %s", response.getHref().get(0)));
-			}
-		}
-		return resources;
-	}
-    
+        for (Response response : responses)
+        {
+            try
+            {
+                resources.add(new DavResource(response));
+            }
+            catch (URISyntaxException e)
+            {
+                log.warning(String.format("Ignore resource with invalid URI %s", response.getHref().get(0)));
+            }
+        }
+        return resources;
+    }
+
     @Override
-	public List<DavResource> patch(String url, List<Element> setProps, List<QName> removeProps) throws IOException
-	{
-		HttpPropPatch entity = new HttpPropPatch(url);
-		// Build WebDAV <code>PROPPATCH</code> entity.
-		Propertyupdate body = new Propertyupdate();
-		// Add properties
-		{
-			com.github.sardine.model.Set set = new com.github.sardine.model.Set();
-			body.getRemoveOrSet().add(set);
-			Prop prop = new Prop();
-			// Returns a reference to the live list
-			List<Element> any = prop.getAny();
-			for (Element element : setProps)
-			{
-				any.add(element);
-			}
-			set.setProp(prop);
-		}
-		// Remove properties
-		{
-			Remove remove = new Remove();
-			body.getRemoveOrSet().add(remove);
-			Prop prop = new Prop();
-			// Returns a reference to the live list
-			List<Element> any = prop.getAny();
-			for (QName entry : removeProps)
-			{
-				Element element = SardineUtil.createElement(entry);
-				any.add(element);
-			}
-			remove.setProp(prop);
-		}
-		entity.setEntity(new StringEntity(SardineUtil.toXml(body), UTF_8));
-		Multistatus multistatus = this.execute(entity, getMultiStatusResponseHandler());
-		List<Response> responses = multistatus.getResponse();
-		List<DavResource> resources = new ArrayList<DavResource>(responses.size());
-		for (Response response : responses)
-		{
-			try
-			{
-				resources.add(new DavResource(response));
-			}
-			catch (URISyntaxException e)
-			{
-				log.warning(String.format("Ignore resource with invalid URI %s", response.getHref().get(0)));
-			}
-		}
-		return resources;
-	}
-    
+    public List<DavResource> patch(String url, List<Element> setProps, List<QName> removeProps) throws IOException
+    {
+        HttpPropPatch entity = new HttpPropPatch(url);
+        // Build WebDAV <code>PROPPATCH</code> entity.
+        Propertyupdate body = new Propertyupdate();
+        // Add properties
+        {
+            com.github.sardine.model.Set set = new com.github.sardine.model.Set();
+            body.getRemoveOrSet().add(set);
+            Prop prop = new Prop();
+            // Returns a reference to the live list
+            List<Element> any = prop.getAny();
+            for (Element element : setProps)
+            {
+                any.add(element);
+            }
+            set.setProp(prop);
+        }
+        // Remove properties
+        {
+            Remove remove = new Remove();
+            body.getRemoveOrSet().add(remove);
+            Prop prop = new Prop();
+            // Returns a reference to the live list
+            List<Element> any = prop.getAny();
+            for (QName entry : removeProps)
+            {
+                Element element = SardineUtil.createElement(entry);
+                any.add(element);
+            }
+            remove.setProp(prop);
+        }
+        entity.setEntity(new StringEntity(SardineUtil.toXml(body), UTF_8));
+        Multistatus multistatus = this.execute(entity, getMultiStatusResponseHandler());
+        List<Response> responses = multistatus.getResponse();
+        List<DavResource> resources = new ArrayList<DavResource>(responses.size());
+        for (Response response : responses)
+        {
+            try
+            {
+                resources.add(new DavResource(response));
+            }
+            catch (URISyntaxException e)
+            {
+                log.warning(String.format("Ignore resource with invalid URI %s", response.getHref().get(0)));
+            }
+        }
+        return resources;
+    }
+
     public List<DavResource> search(String url, String language, String query) throws IOException
-	{
-		HttpEntityEnclosingRequestBase search = new HttpSearch(url);
-		SearchRequest searchBody = new SearchRequest(language, query);
-		String body = SardineUtil.toXml(searchBody);
-		search.setEntity(new StringEntity(body, UTF_8));
-		Multistatus multistatus = this.execute(search, getMultiStatusResponseHandler());
-		List<Response> responses = multistatus.getResponse();
-		List<DavResource> resources = new ArrayList<DavResource>(responses.size());
-		for (Response response : responses)
-		{
-			try
-			{
-				resources.add(new DavResource(response));
-			}
-			catch (URISyntaxException e)
-			{
-				log.warning(String.format("Ignore resource with invalid URI %s", response.getHref().get(0)));
-			}
-		}
-		return resources;
-	}
-    
+    {
+        HttpEntityEnclosingRequestBase search = new HttpSearch(url);
+        SearchRequest searchBody = new SearchRequest(language, query);
+        String body = SardineUtil.toXml(searchBody);
+        search.setEntity(new StringEntity(body, UTF_8));
+        Multistatus multistatus = this.execute(search, getMultiStatusResponseHandler());
+        List<Response> responses = multistatus.getResponse();
+        List<DavResource> resources = new ArrayList<DavResource>(responses.size());
+        for (Response response : responses)
+        {
+            try
+            {
+                resources.add(new DavResource(response));
+            }
+            catch (URISyntaxException e)
+            {
+                log.warning(String.format("Ignore resource with invalid URI %s", response.getHref().get(0)));
+            }
+        }
+        return resources;
+    }
+
     @Deprecated
     @Override
     public void setCustomProps( String url, Map<String, String> set, List<String> remove )
@@ -651,12 +650,77 @@ public class WebdavSardine extends SardineImpl implements Sardine
     {
         super.setCustomProps( url, set, remove );
     }
-    
+
     @Deprecated
     @Override
     public List<DavResource> getResources( String url )
         throws IOException
     {
         return super.getResources( url );
+    }
+
+    // Versioning support
+    public boolean createVersion(String url) {
+
+        HttpVersionControl request = new HttpVersionControl( url );
+        StatusLine status = null;
+        try
+        {
+            status = this.execute( request, new StatusResponseHandler() );
+        }
+        catch ( IOException e )
+        {
+            // versioning not supported
+            return false;
+        }
+
+        // if request was okay, return true
+        if (status.getStatusCode() == HttpStatus.SC_OK) {
+            return true;
+        }
+
+        return false;
+    }
+    
+    @Override
+    public void checkout(String url) throws IOException {
+
+        HttpCheckout request = new HttpCheckout( url );
+        StatusLine status = null;
+       
+        status = this.execute( request, new StatusResponseHandler() );
+       
+        // if request was okay, return true
+        if (status.getStatusCode() == HttpStatus.SC_OK) {
+            throw new IOException("Checkout failed with message: " + status.getReasonPhrase() + " (" + status.getStatusCode() + ")");
+        }
+    }
+    
+    @Override
+    public void uncheckout(String url) throws IOException {
+
+        HttpUncheckout request = new HttpUncheckout( url );
+        StatusLine status = null;
+       
+        status = this.execute( request, new StatusResponseHandler() );
+       
+        // if request was okay, return true
+        if (status.getStatusCode() == HttpStatus.SC_OK) {
+            throw new IOException("Checkout failed with message: " + status.getReasonPhrase() + " (" + status.getStatusCode() + ")");
+        }
+    }
+    
+    @Override
+    public void checkin(String url) throws IOException {
+
+        HttpCheckin request = new HttpCheckin( url );
+        StatusLine status = null;
+       
+        status = this.execute( request, new StatusResponseHandler() );
+       
+        // if request was okay, return true
+        if (status.getStatusCode() == HttpStatus.SC_OK) {
+            throw new IOException("Checkout failed with message: " + status.getReasonPhrase() + " (" + status.getStatusCode() + ")");
+        }
     }
 }

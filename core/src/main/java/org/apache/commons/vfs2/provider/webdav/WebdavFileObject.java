@@ -40,6 +40,7 @@ import org.apache.commons.vfs2.FileType;
 import org.apache.commons.vfs2.NameScope;
 import org.apache.commons.vfs2.provider.AbstractFileName;
 import org.apache.commons.vfs2.provider.AbstractFileObject;
+import org.apache.commons.vfs2.provider.DefaultFileContent;
 import org.apache.commons.vfs2.provider.URLFileName;
 import org.apache.commons.vfs2.provider.UriParser;
 import org.apache.commons.vfs2.util.MonitorOutputStream;
@@ -47,21 +48,48 @@ import org.apache.http.HttpHost;
 import org.apache.http.HttpStatus;
 
 import com.github.sardine.DavResource;
-import com.github.sardine.Sardine;
 import com.github.sardine.impl.SardineException;
 import com.github.sardine.util.SardineUtil;
 
 public class WebdavFileObject<FS extends WebdavFileSystem>
-    extends AbstractFileObject<FS>
+extends AbstractFileObject<FS>
 {
 
-    public class WebdavOutputStream
-        extends MonitorOutputStream
+    public class WebdavOutputStream extends MonitorOutputStream
     {
+        WebdavFileObject<FS> oldfile;
 
-        public WebdavOutputStream()
+        public WebdavOutputStream(final WebdavFileObject<FS> file)
         {
-            super( new ByteArrayOutputStream() );
+            super(new ByteArrayOutputStream());
+            oldfile = file;
+        }
+
+        private boolean createVersion( final String urlString ) {
+            return sardine.createVersion( urlString );
+        }
+
+        private void setUserName(final URLFileName fileName, final String url)
+            throws IOException
+        { 
+            String name = builder.getCreatorName(fileSystem.getFileSystemOptions());
+            final String userName = fileName.getUserName();
+            HashMap<QName,String> propMap = new HashMap<QName,String>();
+            if (name == null)
+            {
+                name = userName;
+            }
+            else
+            {
+                if (userName != null && !userName.equals( name ))
+                {
+                    final String comment = "Modified by user " + userName;
+                    propMap.put( DavResources.COMMENT, comment );
+                }
+            }
+            propMap.put( DavResources.CREATOR_DISPLAYNAME, name );
+            
+            sardine.patch( url, propMap );
         }
 
         /**
@@ -70,25 +98,141 @@ public class WebdavFileObject<FS extends WebdavFileSystem>
          * @see org.apache.commons.vfs2.util.MonitorOutputStream#onClose()
          */
         @Override
-        protected void onClose()
-            throws IOException
+        protected void onClose() throws IOException
         {
-            sardine.put( getFullUrl(), ( (ByteArrayOutputStream) out ).toByteArray() );
+            final URLFileName fileName = (URLFileName) getName();
+            String url = getFullUrl(fileName, true);
+
+            // check if versioning
+            if (builder.isVersioning(fileSystem.getFileSystemOptions()))
+            {
+                boolean fileExists = sardine.exists( url );
+                boolean isCheckedIn = true;
+
+                // look for CHECKED_OUT property
+                if (fileExists) {
+                    // look for checked-in property
+                    List<DavResource> res = sardine.list( url, 0, true );
+                    Map<QName,String> customProps = null;
+                    if (res.size() > 0) {
+                        customProps = res.get( 0 ).getCustomPropsNS();
+                    }
+
+                    if (customProps != null) {
+
+                        // look for CHECKED_OUT
+                        if (customProps.containsKey(DavResources.CHECKED_OUT))
+                        {
+                            isCheckedIn = false;
+                        }
+                        else if (!customProps.containsKey(DavResources.CHECKED_IN))
+                        {
+                            String prop = customProps.get(DavResources.AUTO_VERSION);
+                            if (prop != null)
+                            {
+                                if (DavResources.XML_CHECKOUT_CHECKIN.equals(prop))
+                                {
+                                    createVersion( url );
+                                }
+                            }
+                        } // not checked in
+                    } // has custom properties
+                } // file exists
+
+                if (fileExists && isCheckedIn)
+                {
+                    try
+                    {
+                        sardine.checkout( url );
+                        isCheckedIn = false;
+                    }
+                    catch (final FileSystemException ex)
+                    {
+                        // Ignore the exception checking out.
+                    }
+                }
+
+                // put data
+                try {
+                    sardine.put( url, ( (ByteArrayOutputStream) out ).toByteArray() );
+                    setUserName(fileName, url);
+                }
+                catch (final IOException ex)
+                {
+                    if (!isCheckedIn)
+                    {
+                        try
+                        {
+                            sardine.uncheckout( url );
+                            isCheckedIn = true;
+                        }
+                        catch (final Exception e)
+                        {
+                            // Ignore the exception. Going to throw original.
+                        }
+                        throw ex;
+                    }
+                }
+
+                // now the file should exist
+                if (!fileExists)
+                {
+                    createVersion( url );
+                    try
+                    {
+                        List<DavResource> res = sardine.list( url, 0, true );
+                        Map<QName,String> customProps = null;
+                        if (res.size() > 0) {
+                            customProps = res.get( 0 ).getCustomPropsNS();
+                        }
+                        if (customProps != null) {
+                            isCheckedIn = !customProps.containsKey(DavResources.CHECKED_OUT);
+                        } else {
+                            isCheckedIn = false;
+                        }
+                    }
+                    catch (final FileNotFoundException fnfe)
+                    {
+                        // Ignore the error
+                    }
+                }
+                if (!isCheckedIn)
+                {
+                    sardine.checkin( url );
+                }                
+
+
+            } else
+            {
+                sardine.put( url, ( (ByteArrayOutputStream) out ).toByteArray() );
+                try
+                {
+                    setUserName(fileName, url );
+                }
+                catch (final IOException e)
+                {
+                    // Ignore the exception if unable to set the user name.
+                }
+            }
+            if (oldfile != null) {
+                ((DefaultFileContent) oldfile.getContent()).resetAttributes();
+            }
+
         }
     }
 
     private static final String MIME_DIRECTORY = "httpd/unix-directory";
-
-    private Sardine sardine;
+    private final WebdavFileSystemConfigBuilder builder;
+    private final VersionableSardine sardine;
 
     FS fileSystem;
 
-    public WebdavFileObject( final AbstractFileName name, final FS fileSystem, final Sardine sardine )
+    public WebdavFileObject( final AbstractFileName name, final FS fileSystem, final VersionableSardine sardine )
     {
         super( name, fileSystem );
         this.sardine = sardine;
         this.fileSystem = fileSystem;
-
+        builder = WebdavFileSystemConfigBuilder.getInstance();
     }
 
     @Override
@@ -216,7 +360,7 @@ public class WebdavFileObject<FS extends WebdavFileSystem>
     protected OutputStream doGetOutputStream( boolean bAppend )
         throws Exception
     {
-        return new WebdavOutputStream();
+        return new WebdavOutputStream(this);
     }
 
     @Override
