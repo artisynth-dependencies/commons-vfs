@@ -208,12 +208,14 @@ public final class HttpClientManagerFactory
             int connectionTimeout = builder.getConnectionTimeout( fileSystemOptions );
             int socketTimeout = builder.getSoTimeout( fileSystemOptions );
             boolean followRedirects = builder.getFollowRedirect( fileSystemOptions );
+            boolean allowCircularRedirects = builder.getCircularRedirectsAllowed( fileSystemOptions );
             
             RequestConfig.Builder requestConfig = RequestConfig.custom();
             requestConfig.setExpectContinueEnabled(false);
             requestConfig.setConnectTimeout(connectionTimeout);
             requestConfig.setSocketTimeout(socketTimeout);
             requestConfig.setRedirectsEnabled( followRedirects );
+            requestConfig.setCircularRedirectsAllowed( allowCircularRedirects );
             
             clientBuilder.setDefaultRequestConfig( requestConfig.build() );
 

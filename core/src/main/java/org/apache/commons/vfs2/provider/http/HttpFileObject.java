@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Map;
 
 import org.apache.commons.vfs2.FileContentInfoFactory;
 import org.apache.commons.vfs2.FileNotFoundException;
@@ -263,6 +264,13 @@ public class HttpFileObject<FS extends HttpFileSystem> extends AbstractFileObjec
         
     }
 
+    @Override
+    protected Map<String, Object> doGetAttributes()
+        throws Exception
+    {
+        return super.doGetAttributes();
+    }
+    
     /*
     protected Map doGetAttributes() throws Exception
     {

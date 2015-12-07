@@ -30,8 +30,6 @@ import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
 import javax.jcr.Value;
 
-import junit.framework.Test;
-
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.vfs2.FileObject;
@@ -42,11 +40,12 @@ import org.apache.commons.vfs2.provider.temp.TemporaryFileProvider;
 import org.apache.commons.vfs2.provider.webdav.WebdavFileProvider;
 import org.apache.commons.vfs2.provider.webdav.WebdavFileSystemConfigBuilder;
 import org.apache.commons.vfs2.test.AbstractProviderTestConfig;
-import org.apache.commons.vfs2.test.ProviderTestSuite;
 import org.apache.commons.vfs2.util.FreeSocketPortUtil;
 import org.apache.jackrabbit.core.TransientRepository;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+
+import junit.framework.Test;
 
 /**
  * Test cases for the WebDAV provider.
@@ -69,7 +68,7 @@ public class WebdavProviderTestCase extends AbstractProviderTestConfig
 
     private static File RepoDirectory;
 
-    private static boolean DEBUG = true;// Boolean.getBoolean("WebdavProviderTestCase.Debug");
+    private static boolean DEBUG = Boolean.getBoolean("WebdavProviderTestCase.Debug");
 
     static File createTempDirectory() throws IOException
     {
@@ -275,7 +274,7 @@ public class WebdavProviderTestCase extends AbstractProviderTestConfig
 
     public static Test suite() throws Exception
     {
-        return new ProviderTestSuite(new WebdavProviderTestCase())
+        return new WebdavProviderTestSuite(new WebdavProviderTestCase())
         {
             @Override
             protected void setUp() throws Exception

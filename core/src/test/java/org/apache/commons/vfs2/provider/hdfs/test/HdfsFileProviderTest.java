@@ -90,7 +90,6 @@ public class HdfsFileProviderTest
 
         setUmask(conf);
 
-        
         MiniDFSCluster.Builder miniDFSBuilder = new MiniDFSCluster.Builder(conf);
         miniDFSBuilder.format(true);
         miniDFSBuilder.manageDataDfsDirs(true);

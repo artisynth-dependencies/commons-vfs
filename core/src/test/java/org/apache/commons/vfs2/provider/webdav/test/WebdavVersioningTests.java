@@ -59,12 +59,12 @@ public class WebdavVersioningTests extends AbstractProviderTestCase
         assertTrue(file.isWriteable());
         Map<?, ?> map = file.getContent().getAttributes();
         final String name = ((URLFileName)file.getName()).getUserName();
-        assertTrue(map.containsKey(DeltaVConstants.CREATOR_DISPLAYNAME.toString()));
+        assertTrue(map.containsKey(DeltaVConstants.CREATOR_DISPLAYNAME.getName()));
         if (name != null)
         {
-            assertEquals(name, map.get(DeltaVConstants.CREATOR_DISPLAYNAME.toString()));
+            assertEquals(name, map.get(DeltaVConstants.CREATOR_DISPLAYNAME.getName()));
         }
-        assertTrue(map.containsKey(VersionControlledResource.CHECKED_IN.toString()));
+        assertTrue(map.containsKey(VersionControlledResource.CHECKED_IN.getName()));
 
         // Create the source file
         final String content = "Here is some sample content for the file.  Blah Blah Blah.";
@@ -80,12 +80,12 @@ public class WebdavVersioningTests extends AbstractProviderTestCase
         }
         assertSameContent(content, file);
         map = file.getContent().getAttributes();
-        assertTrue(map.containsKey(DeltaVConstants.CREATOR_DISPLAYNAME.toString()));
+        assertTrue(map.containsKey(DeltaVConstants.CREATOR_DISPLAYNAME.getName()));
         if (name != null)
         {
-            assertEquals(name, map.get(DeltaVConstants.CREATOR_DISPLAYNAME.toString()));
+            assertEquals(name, map.get(DeltaVConstants.CREATOR_DISPLAYNAME.getName()));
         }
-        assertTrue(map.containsKey(VersionControlledResource.CHECKED_IN.toString()));
+        assertTrue(map.containsKey(VersionControlledResource.CHECKED_IN.getName()));
         builder.setVersioning(opts, false);
     }
     /**
@@ -114,14 +114,14 @@ public class WebdavVersioningTests extends AbstractProviderTestCase
         assertTrue(file.isWriteable());
         Map<?, ?> map = file.getContent().getAttributes();
         final String name = ((URLFileName)file.getName()).getUserName();
-        assertTrue(map.containsKey(DeltaVConstants.CREATOR_DISPLAYNAME.toString()));
-        assertEquals(map.get(DeltaVConstants.CREATOR_DISPLAYNAME.toString()),"testUser");
+        assertTrue(map.containsKey(DeltaVConstants.CREATOR_DISPLAYNAME.getName()));
+        assertEquals(map.get(DeltaVConstants.CREATOR_DISPLAYNAME.getName()),"testUser");
         if (name != null)
         {
-            assertTrue(map.containsKey(DeltaVConstants.COMMENT.toString()));
-            assertEquals("Modified by user " + name, map.get(DeltaVConstants.COMMENT.toString()));
+            assertTrue(map.containsKey(DeltaVConstants.COMMENT.getName()));
+            assertEquals("Modified by user " + name, map.get(DeltaVConstants.COMMENT.getName()));
         }
-        assertTrue(map.containsKey(VersionControlledResource.CHECKED_IN.toString()));
+        assertTrue(map.containsKey(VersionControlledResource.CHECKED_IN.getName()));
 
         // Create the source file
         final String content = "Here is some sample content for the file.  Blah Blah Blah.";
@@ -137,18 +137,19 @@ public class WebdavVersioningTests extends AbstractProviderTestCase
         }
         assertSameContent(content, file);
         map = file.getContent().getAttributes();
-        assertTrue(map.containsKey(DeltaVConstants.CREATOR_DISPLAYNAME.toString()));
-        assertEquals(map.get(DeltaVConstants.CREATOR_DISPLAYNAME.toString()),"testUser");
+        assertTrue(map.containsKey(DeltaVConstants.CREATOR_DISPLAYNAME.getName()));
+        assertEquals(map.get(DeltaVConstants.CREATOR_DISPLAYNAME.getName()),"testUser");
         if (name != null)
         {
-            assertTrue(map.containsKey(DeltaVConstants.COMMENT.toString()));
-            assertEquals("Modified by user " + name, map.get(DeltaVConstants.COMMENT.toString()));
+            assertTrue(map.containsKey(DeltaVConstants.COMMENT.getName()));
+            assertEquals("Modified by user " + name, map.get(DeltaVConstants.COMMENT.getName()));
         }
-        assertTrue(map.containsKey(VersionControlledResource.CHECKED_IN.toString()));
+        assertTrue(map.containsKey(VersionControlledResource.CHECKED_IN.getName()));
         builder.setVersioning(opts, false);
         builder.setCreatorName(opts, null);
     }
-        /**
+    
+    /**
      * Sets up a scratch folder for the test to use.
      */
     protected FileObject createScratchFolder() throws Exception

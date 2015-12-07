@@ -23,6 +23,7 @@ import org.apache.commons.vfs2.provider.AbstractFileName;
 import org.apache.commons.vfs2.provider.AbstractFileSystem;
 import org.apache.commons.vfs2.provider.GenericFileName;
 import org.apache.commons.vfs2.provider.http.HttpConnectionClientManager;
+import org.apache.commons.vfs2.provider.webdav.sardine.WebdavSardine;
 import org.apache.http.HttpHost;
 
 /**
@@ -32,7 +33,7 @@ import org.apache.http.HttpHost;
  */
 public class WebdavFileSystem extends AbstractFileSystem
 {
-    private VersionableSardine sardine;
+    private WebdavSardine sardine;
     HttpConnectionClientManager manager;
     
     protected WebdavFileSystem( final GenericFileName rootName, 
@@ -41,12 +42,9 @@ public class WebdavFileSystem extends AbstractFileSystem
     {
         super( rootName, null, fileSystemOptions );
         manager = clientManager;
-        WebdavSardine wsardine = new WebdavSardine( 
+        sardine = new WebdavSardine( 
         		clientManager.getHost(), clientManager.getClientBuilder(), 
-        		clientManager.getClientContext() );
-        
-        sardine = wsardine;
-        
+        		clientManager.getClientContext() );        
     }
     
     public HttpHost getHost() {
@@ -82,6 +80,10 @@ public class WebdavFileSystem extends AbstractFileSystem
     protected FileObject createFile( final AbstractFileName name )
     {
         return new WebdavFileObject<WebdavFileSystem>( name, this, sardine );
+    }
+    
+    public WebdavSardine getSardine() {
+        return sardine;
     }
 
 }

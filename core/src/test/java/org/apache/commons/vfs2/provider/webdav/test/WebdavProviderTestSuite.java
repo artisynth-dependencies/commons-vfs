@@ -16,6 +16,7 @@
  */
 package org.apache.commons.vfs2.provider.webdav.test;
 
+import org.apache.commons.vfs2.impl.test.VfsClassLoaderTests;
 import org.apache.commons.vfs2.test.ContentTests;
 import org.apache.commons.vfs2.test.LastModifiedTests;
 import org.apache.commons.vfs2.test.NamingTests;
@@ -23,6 +24,7 @@ import org.apache.commons.vfs2.test.ProviderCacheStrategyTests;
 import org.apache.commons.vfs2.test.ProviderDeleteTests;
 import org.apache.commons.vfs2.test.ProviderRandomReadTests;
 import org.apache.commons.vfs2.test.ProviderRandomReadWriteTests;
+import org.apache.commons.vfs2.test.ProviderRandomSetLengthTests;
 import org.apache.commons.vfs2.test.ProviderReadTests;
 import org.apache.commons.vfs2.test.ProviderRenameTests;
 import org.apache.commons.vfs2.test.ProviderTestConfig;
@@ -77,16 +79,18 @@ public class WebdavProviderTestSuite extends ProviderTestSuite
         addTests(NamingTests.class);
         addTests(ContentTests.class);
         addTests(ProviderReadTests.class);
-        addTests(ProviderRandomReadTests.class);
         addTests(ProviderWriteTests.class);
         addTests(ProviderWriteAppendTests.class);
+        addTests(ProviderRandomReadTests.class);
         addTests(ProviderRandomReadWriteTests.class);
+        addTests(ProviderRandomSetLengthTests.class);
         addTests(ProviderRenameTests.class);
         addTests(ProviderDeleteTests.class);
         addTests(LastModifiedTests.class);
         addTests(UrlTests.class);
         addTests(UrlStructureTests.class);
         // The class loader test requires the classes be uploaded to the webdav repo.
-        //addTests(VfsClassLoaderTests.class);
+        addTests(VfsClassLoaderTests.class);
+        addTests(WebdavVersioningTests.class);
     }
 }

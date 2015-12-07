@@ -1,4 +1,4 @@
-package org.apache.commons.vfs2.provider.webdav;
+package org.apache.commons.vfs2.provider.webdav.sardine;
 
 import java.net.URI;
 
@@ -8,16 +8,16 @@ import org.apache.http.client.methods.HttpRequestBase;
  * Simple class for making WebDAV <code>VERSION-CONTROL</code> requests.
  *
  */
-public class HttpCheckin extends HttpRequestBase
+public class HttpCheckout extends HttpRequestBase
 {
-    public static final String METHOD_NAME = "CHECKIN";
+    public static final String METHOD_NAME = "CHECKOUT";
 
-    public HttpCheckin(URI sourceUrl)
+    public HttpCheckout(URI sourceUrl)
     {
         this.setURI(sourceUrl);
     }
 
-    public HttpCheckin(String sourceUrl) {
+    public HttpCheckout(String sourceUrl) {
         this(URI.create(sourceUrl));
     }
 

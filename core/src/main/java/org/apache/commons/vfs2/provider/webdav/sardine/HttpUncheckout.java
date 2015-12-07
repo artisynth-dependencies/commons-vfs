@@ -1,4 +1,4 @@
-package org.apache.commons.vfs2.provider.webdav;
+package org.apache.commons.vfs2.provider.webdav.sardine;
 
 import java.net.URI;
 

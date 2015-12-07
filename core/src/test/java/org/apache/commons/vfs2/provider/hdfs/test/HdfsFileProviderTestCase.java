@@ -37,6 +37,7 @@ import org.apache.hadoop.hdfs.DFSConfigKeys;
 import org.apache.hadoop.hdfs.MiniDFSCluster;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.junit.Assert;
 
 /**
  * This test class uses the Hadoop MiniDFSCluster class to create an embedded Hadoop cluster.
@@ -59,7 +60,6 @@ public class HdfsFileProviderTestCase extends AbstractProviderTestConfig impleme
             super(providerConfig, addEmptyDir);
         }
 
-        @SuppressWarnings("deprecation")
         private void copyTestResources(final File directory, final Path parent) throws Exception
         {
             for (final File file : directory.listFiles())
@@ -79,7 +79,7 @@ public class HdfsFileProviderTestCase extends AbstractProviderTestConfig impleme
                     }
                     else
                     {
-                        fail("Unable to make directory: " + dir);
+                        Assert.fail("Unable to make directory: " + dir);
                     }
                 }
             }
@@ -108,7 +108,15 @@ public class HdfsFileProviderTestCase extends AbstractProviderTestConfig impleme
 
             try
             {
-                cluster = new MiniDFSCluster(PORT, conf, 1, true, true, true, null, null, null, null);
+                // cluster = new MiniDFSCluster(PORT, conf, 1, true, true, true, null, null, null, null);
+                MiniDFSCluster.Builder miniDFSBuilder = new MiniDFSCluster.Builder(conf);
+                miniDFSBuilder.format(true);
+                miniDFSBuilder.manageDataDfsDirs(true);
+                miniDFSBuilder.manageNameDfsDirs(true);
+                miniDFSBuilder.nameNodePort(PORT);
+                miniDFSBuilder.numDataNodes( 1 );
+                
+                cluster = miniDFSBuilder.build();
                 cluster.waitActive();
             }
             catch (final IOException e)
