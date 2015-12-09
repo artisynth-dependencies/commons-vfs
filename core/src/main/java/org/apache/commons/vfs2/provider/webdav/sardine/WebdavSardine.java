@@ -121,11 +121,12 @@ import com.github.sardine.util.SardineUtil;
 
 /**
  * Implementation of Sardine, heavily based on that by Jon Stevens et al.
+ * Modified to allow relative requests, custom handlers, and versioning.
  * @author Antonio
  *
  */
 public class WebdavSardine
-    implements Sardine, SardineExtended, HttpAwareSardine
+implements Sardine, SardineExtended, HttpAwareSardine
 {
 
     protected static final String UTF_8 = "UTF-8";
@@ -134,15 +135,15 @@ public class WebdavSardine
     protected static final int DEFAULT_LIST_DEPTH = 1;
 
     protected static final boolean DEFAULT_LIST_ALLPROP = false;
-    
+
     protected static final boolean DEFAULT_LIST_PRETTY = false;
 
     protected static final int DEFAULT_PROPFIND_DEPTH = 0;
 
     protected static final boolean DEFAULT_PROPFIND_ALLPROP = false;
-    
+
     protected static final boolean DEFAULT_PROPFIND_PRETTY = false;
-    
+
     protected static final boolean DEFAULT_MOVE_OVERWRITE = true;
 
     protected static final boolean DEFAULT_COPY_OVERWRITE = true;
@@ -218,7 +219,7 @@ public class WebdavSardine
 
     /**
      * Sets a default host to allow relative url requests
-     * @param host
+     * @param host default host
      */
     public void setDefaultHost( HttpHost host )
     {
@@ -227,7 +228,7 @@ public class WebdavSardine
 
     /**
      * Returns the default host for relative url requests
-     * @return
+     * @return the currently set default host
      */
     public HttpHost getDefaultHost()
     {
@@ -255,24 +256,36 @@ public class WebdavSardine
     }
 
     /**
-     * Returns the custom credentials provider created using {@link #setCredentials(String, String, String, String)}
+     * @return Returns the custom credentials provider created using {@link #setCredentials(String, String, String, String)}
      */
     public CredentialsProvider getCredentialsProvider()
     {
         return customCredentials;
     }
 
+    /**
+     * Allows a custom set of default properties to request, always
+     * @return the currently set default properties
+     */
     public Set<QName> getDefaultProperties()
     {
         return defaultProps;
     }
 
+    /**
+     * Allows a custom set of default properties to request, always
+     * @param set the set of default properties
+     */
     public void setDefaultProperties( Set<QName> set )
     {
         defaultProps = new HashSet<QName>( set );
     }
 
-    public ResponseHandler<List<DavResource>> getDavResourceResponseHandler()
+    /**
+     * Handler responsible for resource list responses.  Override to customize handler.
+     * @return a handler for creating resource lists
+     */
+    protected ResponseHandler<List<DavResource>> getDavResourceResponseHandler()
     {
         if ( davResourceResponseHandler == null )
         {
@@ -281,7 +294,11 @@ public class WebdavSardine
         return davResourceResponseHandler;
     }
 
-    public ResponseHandler<HttpResponseInputStream> getInputStreamResponseHandler()
+    /**
+     * Handler responsible for stream responses.  Override to customize handler.
+     * @return a handler for extracting an input stream
+     */
+    protected ResponseHandler<HttpResponseInputStream> getInputStreamResponseHandler()
     {
         if ( inputStreamResponseHandler == null )
         {
@@ -290,7 +307,11 @@ public class WebdavSardine
         return inputStreamResponseHandler;
     }
 
-    public ResponseHandler<Void> getVoidResponseHandler()
+    /**
+     * Handler responsible for void responses.  Override to customize handler.
+     * @return a handler for checking valid response, but not returning anything
+     */
+    protected ResponseHandler<Void> getVoidResponseHandler()
     {
         if ( voidResponseHandler == null )
         {
@@ -299,7 +320,11 @@ public class WebdavSardine
         return voidResponseHandler;
     }
 
-    public ResponseHandler<StatusLine> getStatusResponseHandler()
+    /**
+     * Handler responsible for resource status responses.  Override to customize handler.
+     * @return a handler that returns the status line of a response
+     */
+    protected ResponseHandler<StatusLine> getStatusResponseHandler()
     {
         if ( statusResponseHandler == null )
         {
@@ -308,7 +333,11 @@ public class WebdavSardine
         return statusResponseHandler;
     }
 
-    public ResponseHandler<Map<URI, Map<QName, String>>> getPropertyResponseHandler()
+    /**
+     * Handler for creating a map of resource to properties. Override to customize handler.
+     * @return a handler that returns a collection of property maps
+     */
+    protected ResponseHandler<Map<URI, Map<QName, String>>> getPropertyResponseHandler()
     {
         if ( propertyResponseHandler == null )
         {
@@ -338,8 +367,17 @@ public class WebdavSardine
         return list( url, depth, props, DEFAULT_LIST_ALLPROP, handler );
     }
 
-    /** 
-     * if allprop, makes sure to include provided properties as well
+    /**
+     * Gets a directory listing using WebDAV <code>PROPFIND</code>.
+     *
+     * @param url   Path to the resource including protocol and hostname
+     * @param depth The depth to look at (use 0 for single ressource, 1 for directory listing)
+     * @param props Additional properties which should be requested (excluding default props).
+     * @param allProp whether to include the &lt;allprop/&gt; element in request body
+     * @param handler for the returned <code>PROPFIND</code> response
+     * @param <T> return type for the handler
+     * @return output of the response handler
+     * @throws IOException I/O error or HTTP response validation failure
      */
     public <T> T list( String url, int depth, Set<QName> props, boolean allProp, ResponseHandler<T> handler )
         throws IOException
@@ -387,7 +425,7 @@ public class WebdavSardine
         //        }
         //
         // String xml = SardineUtil.toXml( body );
-        
+
         // build up properties
         HashSet<QName> nprops = new HashSet<QName>();
         Set<QName> dprops = getDefaultProperties();
@@ -399,7 +437,7 @@ public class WebdavSardine
         {
             nprops.addAll( props );
         }
-        
+
         // we need at least the defaults to build up a resource
         if ( !allProp )
         {
@@ -411,9 +449,9 @@ public class WebdavSardine
                 DavResources.GETCONTENTTYPE,
                 DavResources.RESOURCETYPE,
                 DavResources.GETETAG } ) );
-            
+
         }
-        
+
         String xml = WebdavXMLBuilder.buildPropfind( allProp, nprops, DEFAULT_LIST_PRETTY );
 
         HttpPropFind entity = new HttpPropFind( url );
@@ -451,15 +489,16 @@ public class WebdavSardine
         ResponseHandler<List<DavResource>> handler = getDavResourceResponseHandler();
         return list( url, depth, null, allProp, handler );
     }
-    
+
     /**
-     * If allProp, makes sure to include supplied properties as well
-     * @param url
-     * @param depth
-     * @param allProp
-     * @param props
-     * @return
-     * @throws IOException
+     * Gets a directory listing using WebDAV <code>PROPFIND</code>.
+     *
+     * @param url   Path to the resource including protocol and hostname
+     * @param depth The depth to look at (use 0 for single ressource, 1 for directory listing)
+     * @param props Additional properties which should be requested (excluding default props).
+     * @param allProp whether to include the &lt;allprop/&gt; element in request body
+     * @return corresponding resource list
+     * @throws IOException I/O error or HTTP response validation failure
      */
     public List<DavResource> list( String url, int depth, Set<QName> props, boolean allProp )
         throws IOException
@@ -469,14 +508,14 @@ public class WebdavSardine
     }
 
     /**
-     * Executes the propfind command to find particular properties
-     * 
-     * @param url
-     * @param props
-     * @param allprop
-     * @param handler for the propfind response
-     * @return 
-     * @throws IOException 
+     * Executes the <code>PROPFIND</code> request to find only particular properties
+     * @param url Path to the resource including protocol and hostname
+     * @param props set of properties to request
+     * @param allprop adds the &lt;allprop/&gt; element to <code>PROPFIND</code>
+     * @param handler for the returned <code>PROPFIND</code> response
+     * @param <T> return type for the handler
+     * @return output of the response handler
+     * @throws IOException I/O error or HTTP response validation failure
      */
     public <T> T getProperties( String url, Set<QName> props, boolean allprop, ResponseHandler<T> handler )
         throws IOException
@@ -536,7 +575,7 @@ public class WebdavSardine
             nprops.addAll( props );
         }
         String xml = WebdavXMLBuilder.buildPropfind( allprop, nprops, DEFAULT_PROPFIND_PRETTY );
-        
+
         HttpPropFind entity = new HttpPropFind( url );
         entity.setDepth( "0" );
         entity.setEntity( new StringEntity( xml, UTF_8 ) );
@@ -546,9 +585,9 @@ public class WebdavSardine
     /**
      * Check if the two URIs have same path/query, indicating identical files
      * We have to account for a potential discrepancy with a trailing slash
-     * @param a
-     * @param b
-     * @return
+     * @param a first URI
+     * @param b second URI
+     * @return true if corresponding paths and queries equal (up to trailing slash)
      */
     private boolean pathsEqual( URI a, URI b )
     {
@@ -1011,13 +1050,14 @@ public class WebdavSardine
     }
 
     /**
-     * Put an entity
-     * @param url
-     * @param entity
-     * @param headers
-     * @param handler
-     * @return
-     * @throws IOException
+     * Executes a <code>PUT</code> request with a given entity
+     * @param url Path to the resource including protocol and hostname
+     * @param entity HTML body for request
+     * @param headers set of custom headers on request
+     * @param handler for the returned <code>PROPFIND</code> response
+     * @param <T> return type for the handler
+     * @return output of the response handler
+     * @throws IOException I/O error or HTTP response validation failure
      */
     public <T> T put( String url, HttpEntity entity, List<Header> headers, ResponseHandler<T> handler )
         throws IOException
@@ -1208,6 +1248,16 @@ public class WebdavSardine
         }
     }
 
+    
+    /**
+     * Creates a version-controlled resource at the requested url by sending
+     * a <code>VERSION-CONTROL</code> request
+     * @param url Path to the resource including protocol and hostname
+     * @param handler for the <code>VERSION-CONTROL</code> response
+     * @param <T> return type for the handler
+     * @return output of the response handler
+     * @throws IOException I/O error or HTTP response validation failure
+     */
     public <T> T createVersion( String url, ResponseHandler<T> handler )
         throws IOException
     {
@@ -1222,6 +1272,15 @@ public class WebdavSardine
         checkout( url, getVoidResponseHandler() );
     }
 
+    /**
+     * Checkout a version of a resource by sending
+     * a <code>CHECKOUT</code> request
+     * @param url Path to the resource including protocol and hostname
+     * @param handler for the <code>CHECKOUT</code> response
+     * @param <T> return type for the handler
+     * @return output of the response handler
+     * @throws IOException I/O error or HTTP response validation failure
+     */
     public <T> T checkout( String url, ResponseHandler<T> handler )
         throws IOException
     {
@@ -1236,6 +1295,15 @@ public class WebdavSardine
         uncheckout( url, getVoidResponseHandler() );
     }
 
+    /**
+     * Uncheckout a version of a resource by sending
+     * a <code>UNCHECKOUT</code> request
+     * @param url Path to the resource including protocol and hostname
+     * @param handler for the <code>UNCHECKOUT</code> response
+     * @param <T> return type for the handler
+     * @return output of the response handler
+     * @throws IOException I/O error or HTTP response validation failure
+     */
     public <T> T uncheckout( String url, ResponseHandler<T> handler )
         throws IOException
     {
@@ -1250,6 +1318,15 @@ public class WebdavSardine
         checkin( url, getVoidResponseHandler() );
     }
 
+    /**
+     * Checkin a version of a resource by sending
+     * a <code>CHECKIN</code> request
+     * @param url Path to the resource including protocol and hostname
+     * @param handler for the <code>CHECKIN</code> response
+     * @param <T> return type for the handler
+     * @return output of the response handler
+     * @throws IOException I/O error or HTTP response validation failure
+     */
     public <T> T checkin( String url, ResponseHandler<T> handler )
         throws IOException
     {
@@ -1266,36 +1343,44 @@ public class WebdavSardine
     @Override
     public void setCredentials( String username, String password, String domain, String workstation )
     {
-        customCredentials = getCredentialsProvider( username, password, domain, workstation );
+        customCredentials = createCredentialsProvider( username, password, domain, workstation );
         updateCredentials();
     }
 
-    private CredentialsProvider getCredentialsProvider( String username, String password, String domain,
+    /**
+     * Creates a new credentials provider
+     * @param username username
+     * @param password password
+     * @param domain workspace domain
+     * @param workstation workspace station
+     * @return a new credentials provider with the supplied stats
+     */
+    protected CredentialsProvider createCredentialsProvider( String username, String password, String domain,
                                                         String workstation )
     {
         CredentialsProvider provider = new BasicCredentialsProvider();
         if ( username != null )
         {
             provider.setCredentials(
-                                     new AuthScope( AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM,
-                                                    AuthSchemes.NTLM ),
-                                     new NTCredentials( username, password, workstation, domain ) );
+                                    new AuthScope( AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM,
+                                                   AuthSchemes.NTLM ),
+                                    new NTCredentials( username, password, workstation, domain ) );
             provider.setCredentials(
-                                     new AuthScope( AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM,
-                                                    AuthSchemes.BASIC ),
-                                     new UsernamePasswordCredentials( username, password ) );
+                                    new AuthScope( AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM,
+                                                   AuthSchemes.BASIC ),
+                                    new UsernamePasswordCredentials( username, password ) );
             provider.setCredentials(
-                                     new AuthScope( AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM,
-                                                    AuthSchemes.DIGEST ),
-                                     new UsernamePasswordCredentials( username, password ) );
+                                    new AuthScope( AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM,
+                                                   AuthSchemes.DIGEST ),
+                                    new UsernamePasswordCredentials( username, password ) );
             provider.setCredentials(
-                                     new AuthScope( AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM,
-                                                    AuthSchemes.SPNEGO ),
-                                     new UsernamePasswordCredentials( username, password ) );
+                                    new AuthScope( AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM,
+                                                   AuthSchemes.SPNEGO ),
+                                    new UsernamePasswordCredentials( username, password ) );
             provider.setCredentials(
-                                     new AuthScope( AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM,
-                                                    AuthSchemes.KERBEROS ),
-                                     new UsernamePasswordCredentials( username, password ) );
+                                    new AuthScope( AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM,
+                                                   AuthSchemes.KERBEROS ),
+                                    new UsernamePasswordCredentials( username, password ) );
         }
         return provider;
     }
@@ -1468,8 +1553,8 @@ public class WebdavSardine
                             && propstat.getProp().getResourcetype().getPrincipal() != null )
                         {
                             collections
-                                .add( new DavPrincipal( DavPrincipal.PrincipalType.HREF, r.getHref().get( 0 ),
-                                                        propstat.getProp().getDisplayname().getContent().get( 0 ) ) );
+                            .add( new DavPrincipal( DavPrincipal.PrincipalType.HREF, r.getHref().get( 0 ),
+                                                    propstat.getProp().getDisplayname().getContent().get( 0 ) ) );
                         }
                     }
                 }

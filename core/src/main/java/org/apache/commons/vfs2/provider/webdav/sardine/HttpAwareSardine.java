@@ -41,10 +41,12 @@ public interface HttpAwareSardine extends Sardine
      * Gets a directory listing using WebDAV <code>PROPFIND</code>.
      *
      * @param url Path to the resource including protocol and hostname
-     * @param handler for the returned PROPFIND response
+     * @param handler for the returned <code>PROPFIND</code> response
+     * @param <T> return type for the handler
      * @return output of the response handler
      * @throws IOException I/O error or HTTP response validation failure
      */
+    
     public<T> T list(String url, ResponseHandler<T> handler) throws IOException;
 
     /**
@@ -52,7 +54,8 @@ public interface HttpAwareSardine extends Sardine
      *
      * @param url   Path to the resource including protocol and hostname
      * @param depth The depth to look at (use 0 for single ressource, 1 for directory listing)
-     * @param handler for the returned PROPFIND response
+     * @param handler for the returned <code>PROPFIND</code> response
+     * @param <T> return type for the handler
      * @return output of the response handler
      * @throws IOException I/O error or HTTP response validation failure
      */
@@ -64,7 +67,8 @@ public interface HttpAwareSardine extends Sardine
      * @param url   Path to the resource including protocol and hostname
      * @param depth The depth to look at (use 0 for single ressource, 1 for directory listing)
      * @param props Additional properties which should be requested (excluding default props).
-     * @param handler for the returned PROPFIND response
+     * @param handler for the returned <code>PROPFIND</code> response
+     * @param <T> return type for the handler
      * @return output of the response handler
      * @throws IOException I/O error or HTTP response validation failure
      */
@@ -75,7 +79,8 @@ public interface HttpAwareSardine extends Sardine
      * @param url The base resource to search from.
      * @param language The language the query is formed in.
      * @param query The query string to be processed by the webdav server.
-     * @param handler for the returned SEARCH response
+     * @param handler for the returned <code>SEARCH</code> response
+     * @param <T> return type for the handler
      * @return output of the response handler
      * @throws IOException I/O error or HTTP response validation failure.
      */
@@ -87,7 +92,8 @@ public interface HttpAwareSardine extends Sardine
      *
      * @param url     Path to the resource including protocol and hostname
      * @param addProps Properties to add to resource. If a property already exists then its value is replaced.
-     * @param handler for the returned PROPPATCH response
+     * @param handler for the returned <code>PROPPATCH</code> response
+     * @param <T> return type for the handler
      * @return output of the response handler
      * @throws IOException I/O error or HTTP response validation failure
      */
@@ -99,7 +105,8 @@ public interface HttpAwareSardine extends Sardine
      * @param url        Path to the resource including protocol and hostname
      * @param addProps  Properties to add to resource. If a property already exists then its value is replaced.
      * @param removeProps Properties to remove from resource. Specifying the removal of a property that does not exist is not an error.
-     * @param handler for the returned PROPPATCH response
+     * @param handler for the returned <code>PROPPATCH</code> response
+     * @param <T> return type for the handler
      * @return output of the response handler
      * @throws IOException I/O error or HTTP response validation failure
      */
@@ -111,7 +118,8 @@ public interface HttpAwareSardine extends Sardine
      * @param url        Path to the resource including protocol and hostname
      * @param addProps  Properties to add to resource. If a property already exists then its value is replaced.
      * @param removeProps Properties to remove from resource. Specifying the removal of a property that does not exist is not an error.
-     * @param handler for the returned PROPPATCH response
+     * @param handler for the returned <code>PROPPATCH</code> response
+     * @param <T> return type for the handler
      * @return output of the response handler
      * @throws IOException I/O error or HTTP response validation failure
      */
@@ -121,7 +129,8 @@ public interface HttpAwareSardine extends Sardine
      * Uses HTTP <code>GET</code> to download data from a server. The stream must be closed after reading.
      *
      * @param url Path to the resource including protocol and hostname
-     * @param handler for the returned GET response
+     * @param handler for the returned <code>GET</code> response
+     * @param <T> return type for the handler
      * @return output of the response handler
      * @throws IOException I/O error or HTTP response validation failure
      */
@@ -132,7 +141,8 @@ public interface HttpAwareSardine extends Sardine
      *
      * @param url    Path to the resource including protocol and hostname
      * @param headers Additional HTTP headers to add to the request
-     * @param handler for the returned GET response
+     * @param handler for the returned <code>GET</code> response
+     * @param <T> return type for the handler
      * @return output of the response handler
      * @throws IOException I/O error or HTTP response validation failure
      */
@@ -143,7 +153,8 @@ public interface HttpAwareSardine extends Sardine
      *
      * @param url  Path to the resource including protocol and hostname
      * @param data Input source
-     * @param handler for the returned PUT response
+     * @param handler for the returned <code>PUT</code> response
+     * @param <T> return type for the handler
      * @return output of the response handler
      * @throws IOException I/O error or HTTP response validation failure
      */
@@ -154,7 +165,8 @@ public interface HttpAwareSardine extends Sardine
      *
      * @param url       Path to the resource including protocol and hostname
      * @param dataStream Input source
-     * @param handler for the returned PUT response
+     * @param handler for the returned <code>PUT</code> response
+     * @param <T> return type for the handler
      * @return output of the response handler
      * @throws IOException I/O error or HTTP response validation failure
      */
@@ -167,7 +179,8 @@ public interface HttpAwareSardine extends Sardine
      * @param url        Path to the resource including protocol and hostname
      * @param data      Input source
      * @param contentType MIME type to add to the HTTP request header
-     * @param handler for the returned PUT response
+     * @param <T> return type for the handler
+     * @param handler for the returned <code>PUT</code> response
      * @return output of the response handler
      * @throws IOException I/O error or HTTP response validation failure
      */
@@ -180,7 +193,8 @@ public interface HttpAwareSardine extends Sardine
      * @param url        Path to the resource including protocol and hostname
      * @param dataStream  Input source
      * @param contentType MIME type to add to the HTTP request header
-     * @param handler for the returned PUT response
+     * @param handler for the returned <code>PUT</code> response
+     * @param <T> return type for the handler
      * @return output of the response handler
      * @throws IOException I/O error or HTTP response validation failure
      */
@@ -194,7 +208,8 @@ public interface HttpAwareSardine extends Sardine
      * @param dataStream     Input source
      * @param contentType   MIME type to add to the HTTP request header
      * @param expectContinue Enable <code>Expect: continue</code> header for <code>PUT</code> requests.
-     * @param handler for the returned PUT response
+     * @param handler for the returned <code>PUT</code> response
+     * @param <T> return type for the handler
      * @return output of the response handler
      * @throws IOException I/O error or HTTP response validation failure
      */
@@ -210,7 +225,8 @@ public interface HttpAwareSardine extends Sardine
      * @param contentType   MIME type to add to the HTTP request header
      * @param expectContinue Enable <code>Expect: continue</code> header for <code>PUT</code> requests.
      * @param contentLength data size in bytes to set to Content-Length header
-     * @param handler for the returned PUT response
+     * @param handler for the returned <code>PUT</code> response
+     * @param <T> return type for the handler
      * @return output of the response handler
      * @throws IOException I/O error or HTTP response validation failure
      */
@@ -224,7 +240,8 @@ public interface HttpAwareSardine extends Sardine
      * @param url       Path to the resource including protocol and hostname
      * @param dataStream Input source
      * @param headers   Additional HTTP headers to add to the request
-     * @param handler for the returned PUT response
+     * @param handler for the returned <code>PUT</code> response
+     * @param <T> return type for the handler
      * @return output of the response handler
      * @throws IOException I/O error or HTTP response validation failure
      */
@@ -238,7 +255,8 @@ public interface HttpAwareSardine extends Sardine
      * @param url       Path to the resource including protocol and hostname
      * @param localFile local file to send
      * @param contentType   MIME type to add to the HTTP request header
-     * @param handler for the returned PUT response
+     * @param handler for the returned <code>PUT</code> response
+     * @param <T> return type for the handler
      * @return output of the response handler
      * @throws IOException I/O error or HTTP response validation failure
      */
@@ -252,7 +270,8 @@ public interface HttpAwareSardine extends Sardine
      * @param localFile local file to send
      * @param contentType   MIME type to add to the HTTP request header
      * @param expectContinue Enable <code>Expect: continue</code> header for <code>PUT</code> requests.
-     * @param handler for the returned PUT response
+     * @param handler for the returned <code>PUT</code> response
+     * @param <T> return type for the handler
      * @return output of the response handler
      * @throws IOException I/O error or HTTP response validation failure
      */
@@ -264,6 +283,7 @@ public interface HttpAwareSardine extends Sardine
      *
      * @param url Path to the resource including protocol and hostname
      * @param handler for the returned <code>DELETE</code> response
+     * @param <T> return type for the handler
      * @return output of the response handler
      * @throws IOException I/O error or HTTP response validation failure
      */
@@ -274,6 +294,7 @@ public interface HttpAwareSardine extends Sardine
      *
      * @param url Path to the resource including protocol and hostname
      * @param handler for the returned <code>MKCOL</code> response
+     * @param <T> return type for the handler
      * @return output of the response handler
      * @throws IOException I/O error or HTTP response validation failure
      */
@@ -285,6 +306,7 @@ public interface HttpAwareSardine extends Sardine
      * @param sourceUrl   Path to the resource including protocol and hostname
      * @param destinationUrl Path to the resource including protocol and hostname
      * @param handler for the returned <code>MOVE</code> response
+     * @param <T> return type for the handler
      * @return output of the response handler
      * @throws IOException I/O error or HTTP response validation failure
      */
@@ -297,6 +319,7 @@ public interface HttpAwareSardine extends Sardine
      * @param destinationUrl Path to the resource including protocol and hostname
      * @param overwrite {@code true} to overwrite if the destination exists, {@code false} otherwise.
      * @param handler for the returned <code>MOVE</code> response
+     * @param <T> return type for the handler
      * @return output of the response handler
      * @throws IOException I/O error or HTTP response validation failure
      */
@@ -308,6 +331,7 @@ public interface HttpAwareSardine extends Sardine
      * @param sourceUrl   Path to the resource including protocol and hostname
      * @param destinationUrl Path to the resource including protocol and hostname
      * @param handler for the returned <code>COPY</code> response
+     * @param <T> return type for the handler
      * @return output of the response handler
      * @throws IOException I/O error or HTTP response validation failure
      */
@@ -320,6 +344,7 @@ public interface HttpAwareSardine extends Sardine
      * @param destinationUrl Path to the resource including protocol and hostname
      * @param overwrite {@code true} to overwrite if the destination exists, {@code false} otherwise.
      * @param handler for the returned <code>COPY</code> response
+     * @param <T> return type for the handler
      * @return output of the response handler
      * @throws IOException I/O error or HTTP response validation failure
      */
@@ -327,20 +352,19 @@ public interface HttpAwareSardine extends Sardine
 
     /**
      * Executes a custom HTTP request
-     * @param url   Path to the resource including protocol and hostname
      * @param request the request to execute
      * @param handler for the response to the provided request
-     * @return
-     * @throws IOException 
+     * @param <T> return type for the handler
+     * @return output of the response handler
+     * @throws IOException I/O error or HTTP response validation failure
      */
     public<T> T execute(HttpRequest request, ResponseHandler<T> handler) throws IOException;
 
     /**
      * Executes a custom HTTP request
-     * @param url   Path to the resource including protocol and hostname
      * @param request the request to execute
-     * @return
-     * @throws IOException 
+     * @return output for the response handler
+     * @throws IOException I/O error or HTTP response validation failure
      */
     HttpResponse execute( HttpRequest request ) throws IOException;
     

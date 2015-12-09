@@ -258,7 +258,8 @@ public class HttpFileObject<FS extends HttpFileSystem>
 
     /**
      * Prepares a Request object.
-     * @throws FileSystemException
+     * @param method the HTTP method to configure
+     * @throws FileSystemException if there is any error in building the request (e.g. an invalid url syntax)
      * @since 2.0 (was package)
      */
     protected void setupMethod( final HttpRequestBase method )

@@ -374,7 +374,7 @@ public class HttpFileSystemConfigBuilder
 
     /**
      * Assign the user agent to attach to the outgoing http methods
-     *
+     * @param opts file system options
      * @param userAgent User Agent String
      */
     public void setUserAgent( final FileSystemOptions opts, final String userAgent )
@@ -385,6 +385,7 @@ public class HttpFileSystemConfigBuilder
     /**
      * Return the user agent string
      *
+     * @param opts file system options
      * @return User provided User-Agent string, otherwise default of: Jakarta-Commons-VFS
      */
     public String getUserAgent( final FileSystemOptions opts )

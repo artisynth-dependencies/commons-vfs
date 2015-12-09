@@ -36,6 +36,12 @@ public class HttpConnectionClient
 
     private CloseableHttpClient client;
 
+    /**
+     * Constructs a client wrapper that uses the given client, host and context to make requests
+     * @param client HTTP client for requests
+     * @param host default host
+     * @param context context to use
+     */
     public HttpConnectionClient( CloseableHttpClient client, HttpHost host, HttpClientContext context )
     {
         this.client = client;
@@ -44,11 +50,11 @@ public class HttpConnectionClient
     }
 
     /**
-     * Executes an Http request
-     * @param request
-     * @return
-     * @throws ClientProtocolException
-     * @throws IOException
+     * Executes an HTTP request.  Uses the current context, host and client.
+     * @param request the request to make
+     * @return the corresponding response
+     * @throws ClientProtocolException  in case of an http protocol error
+     * @throws IOException in case of a problem or the connection was aborted
      */
     public HttpResponse execute( HttpUriRequest request )
         throws ClientProtocolException, IOException
@@ -68,10 +74,11 @@ public class HttpConnectionClient
 
     /**
      * Executes an Http request
-     * @param request
-     * @return
-     * @throws ClientProtocolException
-     * @throws IOException
+     * @param host host to use for connection
+     * @param request request to make
+     * @return the corresponding response
+     * @throws ClientProtocolException  in case of an http protocol error
+     * @throws IOException in case of a problem or the connection was aborted
      */
     public HttpResponse execute( HttpHost host, HttpUriRequest request )
         throws ClientProtocolException, IOException
@@ -91,10 +98,12 @@ public class HttpConnectionClient
 
     /**
      * Executes an Http request
-     * @param request
-     * @return
-     * @throws ClientProtocolException
-     * @throws IOException
+     * @param host host to use for connection
+     * @param request request to make
+     * @param context the context for the connection
+     * @return the corresponding response
+     * @throws ClientProtocolException  in case of an http protocol error
+     * @throws IOException in case of a problem or the connection was aborted
      */
     public HttpResponse execute( HttpHost host, HttpUriRequest request, HttpClientContext context )
         throws ClientProtocolException, IOException

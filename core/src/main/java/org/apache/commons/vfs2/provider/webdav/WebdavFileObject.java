@@ -63,7 +63,7 @@ import com.github.sardine.util.SardineUtil;
  * Webdav file object based on Sardine
  * 
  * @author Antonio
- * @param <FS>
+ * @param <FS> WebdavFileSystem implementation
  */
 public class WebdavFileObject<FS extends WebdavFileSystem>
     extends AbstractFileObject<FS>
@@ -117,7 +117,7 @@ public class WebdavFileObject<FS extends WebdavFileSystem>
 
         /**
          * On close, the file is written
-         * @throws IOException
+         * @throws IOException if there is a write error
          * @see org.apache.commons.vfs2.util.MonitorOutputStream#onClose()
          */
         @Override
@@ -494,9 +494,9 @@ public class WebdavFileObject<FS extends WebdavFileSystem>
     /**
      * Check if the two URIs have same path/query, indicating identical files
      * We have to account for a potential discrepancy with a trailing slash
-     * @param a
-     * @param b
-     * @return
+     * @param a first URI
+     * @param b second URI
+     * @return whether the path and query parts of the URIs are equal
      */
     protected boolean pathsEqual( URI a, URI b )
     {
@@ -741,8 +741,8 @@ public class WebdavFileObject<FS extends WebdavFileSystem>
 
     /**
      * Remove host from a URI
-     * @param uri
-     * @return
+     * @param uri URI to strip host from
+     * @return the corresponding relative URI
      */
     protected static URI stripHost( URI uri )
     {
