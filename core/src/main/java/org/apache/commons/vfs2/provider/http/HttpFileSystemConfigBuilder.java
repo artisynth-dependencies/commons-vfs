@@ -1,18 +1,16 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * Licensed to the Apache Software Foundation (ASF) under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional information regarding
+ * copyright ownership. The ASF licenses this file to You under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance with the License. You may obtain a
+ * copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
  */
 package org.apache.commons.vfs2.provider.http;
 
@@ -35,10 +33,11 @@ import org.apache.http.ssl.TrustStrategy;
 /**
  * Configuration options for HTTP.
  */
-public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
+public class HttpFileSystemConfigBuilder
+    extends FileSystemConfigBuilder
 {
     protected static final String KEY_FOLLOW_REDIRECT = "followRedirect";
-    
+
     protected static final String KEY_CIRCULAR_REDIRECTS_ALLOWED = "http.circularRedirect";
 
     protected static final String KEY_USER_AGENT = "userAgent";
@@ -54,7 +53,7 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
     private static final int DEFAULT_SO_TIMEOUT = 0;
 
     private static final boolean DEFAULT_FOLLOW_REDIRECT = true;
-    
+
     private static final boolean DEFAULT_CIRCULAR_REDIRECTS_ALLOWED = false;
 
     private static final String DEFAULT_USER_AGENT = "Jakarta-Commons-VFS";
@@ -66,14 +65,14 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
      * @param prefix String for properties of this file system.
      * @since 2.0
      */
-    protected HttpFileSystemConfigBuilder(final String prefix)
+    protected HttpFileSystemConfigBuilder( final String prefix )
     {
-        super(prefix);
+        super( prefix );
     }
 
     private HttpFileSystemConfigBuilder()
     {
-        super("http.");
+        super( "http." );
     }
 
     /**
@@ -92,9 +91,9 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
      * @param opts The FileSystem options.
      * @param chaset the chaset
      */
-    public void setUrlCharset(final FileSystemOptions opts, final String chaset)
+    public void setUrlCharset( final FileSystemOptions opts, final String chaset )
     {
-        setParam(opts, "urlCharset", chaset);
+        setParam( opts, "urlCharset", chaset );
     }
 
     /**
@@ -103,9 +102,9 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
      * @param opts The FileSystem options.
      * @return the chaset
      */
-    public String getUrlCharset(final FileSystemOptions opts)
+    public String getUrlCharset( final FileSystemOptions opts )
     {
-        return getString(opts, "urlCharset");
+        return getString( opts, "urlCharset" );
     }
 
     /**
@@ -116,9 +115,9 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
      * @param proxyHost the host
      * @see #setProxyPort
      */
-    public void setProxyHost(final FileSystemOptions opts, final String proxyHost)
+    public void setProxyHost( final FileSystemOptions opts, final String proxyHost )
     {
-        setParam(opts, "proxyHost", proxyHost);
+        setParam( opts, "proxyHost", proxyHost );
     }
 
     /**
@@ -129,9 +128,9 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
      * @param proxyPort the port
      * @see #setProxyHost
      */
-    public void setProxyPort(final FileSystemOptions opts, final int proxyPort)
+    public void setProxyPort( final FileSystemOptions opts, final int proxyPort )
     {
-        setParam(opts, "proxyPort", Integer.valueOf(proxyPort));
+        setParam( opts, "proxyPort", Integer.valueOf( proxyPort ) );
     }
 
     /**
@@ -142,9 +141,9 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
      * @return proxyHost
      * @see #setProxyPort
      */
-    public String getProxyHost(final FileSystemOptions opts)
+    public String getProxyHost( final FileSystemOptions opts )
     {
-        return getString(opts, "proxyHost");
+        return getString( opts, "proxyHost" );
     }
 
     /**
@@ -155,9 +154,9 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
      * @return proxyPort: the port number or 0 if it is not set
      * @see #setProxyHost
      */
-    public int getProxyPort(final FileSystemOptions opts)
+    public int getProxyPort( final FileSystemOptions opts )
     {
-        return getInteger(opts, "proxyPort", 0);
+        return getInteger( opts, "proxyPort", 0 );
     }
 
     /**
@@ -165,9 +164,9 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
      * @param opts The FileSystem options.
      * @param authenticator The UserAuthenticator.
      */
-    public void setProxyAuthenticator(final FileSystemOptions opts, final UserAuthenticator authenticator)
+    public void setProxyAuthenticator( final FileSystemOptions opts, final UserAuthenticator authenticator )
     {
-        setParam(opts, "proxyAuthenticator", authenticator);
+        setParam( opts, "proxyAuthenticator", authenticator );
     }
 
     /**
@@ -175,9 +174,9 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
      * @param opts The FileSystem options.
      * @return The UserAuthenticator.
      */
-    public UserAuthenticator getProxyAuthenticator(final FileSystemOptions opts)
+    public UserAuthenticator getProxyAuthenticator( final FileSystemOptions opts )
     {
-        return (UserAuthenticator) getParam(opts, "proxyAuthenticator");
+        return (UserAuthenticator) getParam( opts, "proxyAuthenticator" );
     }
 
     /**
@@ -185,9 +184,9 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
      * @param opts The FileSystem options.
      * @param cookies An array of Cookies.
      */
-    public void setCookies(final FileSystemOptions opts, final Cookie[] cookies)
+    public void setCookies( final FileSystemOptions opts, final Cookie[] cookies )
     {
-        setParam(opts, "cookies", cookies);
+        setParam( opts, "cookies", cookies );
     }
 
     /**
@@ -200,9 +199,9 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
      * @see #setFollowRedirect
      * @since 2.1
      */
-    public void setFollowRedirect(final FileSystemOptions opts, final boolean redirect)
+    public void setFollowRedirect( final FileSystemOptions opts, final boolean redirect )
     {
-        setParam(opts, KEY_FOLLOW_REDIRECT, redirect);
+        setParam( opts, KEY_FOLLOW_REDIRECT, redirect );
     }
 
     /**
@@ -210,9 +209,9 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
      * @param opts The FileSystem options.
      * @return the Cookie array.
      */
-    public Cookie[] getCookies(final FileSystemOptions opts)
+    public Cookie[] getCookies( final FileSystemOptions opts )
     {
-        return (Cookie[]) getParam(opts, "cookies");
+        return (Cookie[]) getParam( opts, "cookies" );
     }
 
     /**
@@ -224,35 +223,35 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
      * @see #setFollowRedirect
      * @since 2.1
      */
-    public boolean getFollowRedirect(final FileSystemOptions opts)
+    public boolean getFollowRedirect( final FileSystemOptions opts )
     {
-        return getBoolean(opts, KEY_FOLLOW_REDIRECT, DEFAULT_FOLLOW_REDIRECT);
+        return getBoolean( opts, KEY_FOLLOW_REDIRECT, DEFAULT_FOLLOW_REDIRECT );
     }
-    
+
     /**
      * Sets whether to follow circular redirects for the connection.
      *
      * @param opts
      *            The FileSystem options.
      * @param set {@code true} to follow circular, {@code false} not to.
-
-     */
-    public void getCircularRedirectsAllowed(final FileSystemOptions opts, boolean set)
-    {
-        setParam(opts, KEY_CIRCULAR_REDIRECTS_ALLOWED, set);
-    }
     
+     */
+    public void getCircularRedirectsAllowed( final FileSystemOptions opts, boolean set )
+    {
+        setParam( opts, KEY_CIRCULAR_REDIRECTS_ALLOWED, set );
+    }
+
     /**
      * Gets whether to follow circular redirects for the connection.
      *
      * @param opts
      *            The FileSystem options.
      * @return {@code true} to follow redirects, {@code false} not to.
-
+    
      */
-    public boolean getCircularRedirectsAllowed(final FileSystemOptions opts)
+    public boolean getCircularRedirectsAllowed( final FileSystemOptions opts )
     {
-        return getBoolean(opts, KEY_CIRCULAR_REDIRECTS_ALLOWED, DEFAULT_CIRCULAR_REDIRECTS_ALLOWED);
+        return getBoolean( opts, KEY_CIRCULAR_REDIRECTS_ALLOWED, DEFAULT_CIRCULAR_REDIRECTS_ALLOWED );
     }
 
     /**
@@ -261,9 +260,9 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
      * @param maxTotalConnections The maximum number of connections.
      * @since 2.0
      */
-    public void setMaxTotalConnections(final FileSystemOptions opts, final int maxTotalConnections)
+    public void setMaxTotalConnections( final FileSystemOptions opts, final int maxTotalConnections )
     {
-        setParam(opts, HttpConnectionManagerParams.MAX_TOTAL_CONNECTIONS, Integer.valueOf(maxTotalConnections));
+        setParam( opts, HttpConnectionManagerParams.MAX_TOTAL_CONNECTIONS, Integer.valueOf( maxTotalConnections ) );
     }
 
     /**
@@ -272,9 +271,9 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
      * @return The maximum number of connections allowed.
      * @since 2.0
      */
-    public int getMaxTotalConnections(final FileSystemOptions opts)
+    public int getMaxTotalConnections( final FileSystemOptions opts )
     {
-        return getInteger(opts, HttpConnectionManagerParams.MAX_TOTAL_CONNECTIONS, DEFAULT_MAX_CONNECTIONS);
+        return getInteger( opts, HttpConnectionManagerParams.MAX_TOTAL_CONNECTIONS, DEFAULT_MAX_CONNECTIONS );
     }
 
     /**
@@ -283,9 +282,9 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
      * @param maxHostConnections The maximum number of connections to a host.
      * @since 2.0
      */
-    public void setMaxConnectionsPerHost(final FileSystemOptions opts, final int maxHostConnections)
+    public void setMaxConnectionsPerHost( final FileSystemOptions opts, final int maxHostConnections )
     {
-        setParam(opts, HttpConnectionManagerParams.MAX_HOST_CONNECTIONS, Integer.valueOf(maxHostConnections));
+        setParam( opts, HttpConnectionManagerParams.MAX_HOST_CONNECTIONS, Integer.valueOf( maxHostConnections ) );
     }
 
     /**
@@ -294,9 +293,9 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
      * @return The maximum number of connections allowed per host.
      * @since 2.0
      */
-    public int getMaxConnectionsPerHost(final FileSystemOptions opts)
+    public int getMaxConnectionsPerHost( final FileSystemOptions opts )
     {
-        return getInteger(opts, HttpConnectionManagerParams.MAX_HOST_CONNECTIONS, DEFAULT_MAX_HOST_CONNECTIONS);
+        return getInteger( opts, HttpConnectionManagerParams.MAX_HOST_CONNECTIONS, DEFAULT_MAX_HOST_CONNECTIONS );
     }
 
     /**
@@ -306,9 +305,9 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
      * @return true if preemptiveAuth is requested.
      * @since 2.0
      */
-    public boolean isPreemptiveAuth(final FileSystemOptions opts)
+    public boolean isPreemptiveAuth( final FileSystemOptions opts )
     {
-        return getBoolean(opts, KEY_PREEMPTIVE_AUTHENTICATION, Boolean.FALSE).booleanValue();
+        return getBoolean( opts, KEY_PREEMPTIVE_AUTHENTICATION, Boolean.FALSE ).booleanValue();
     }
 
     /**
@@ -320,9 +319,9 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
      * @param opts The FileSystemOptions.
      * @param preemptiveAuth the desired setting; true=enabled and false=disabled.
      */
-    public void setPreemptiveAuth(final FileSystemOptions opts, final boolean preemptiveAuth)
+    public void setPreemptiveAuth( final FileSystemOptions opts, final boolean preemptiveAuth )
     {
-        setParam(opts, KEY_PREEMPTIVE_AUTHENTICATION, Boolean.valueOf(preemptiveAuth));
+        setParam( opts, KEY_PREEMPTIVE_AUTHENTICATION, Boolean.valueOf( preemptiveAuth ) );
     }
 
     /**
@@ -332,9 +331,9 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
      * @param connectionTimeout The connection timeout.
      * @since 2.1
      */
-    public void setConnectionTimeout(final FileSystemOptions opts, final int connectionTimeout)
+    public void setConnectionTimeout( final FileSystemOptions opts, final int connectionTimeout )
     {
-        setParam(opts, HttpConnectionManagerParams.CONNECTION_TIMEOUT, Integer.valueOf(connectionTimeout));
+        setParam( opts, HttpConnectionManagerParams.CONNECTION_TIMEOUT, Integer.valueOf( connectionTimeout ) );
     }
 
     /**
@@ -344,9 +343,9 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
      * @return The connection timeout.
      * @since 2.1
      */
-    public int getConnectionTimeout(final FileSystemOptions opts)
+    public int getConnectionTimeout( final FileSystemOptions opts )
     {
-        return getInteger(opts, HttpConnectionManagerParams.CONNECTION_TIMEOUT, DEFAULT_CONNECTION_TIMEOUT);
+        return getInteger( opts, HttpConnectionManagerParams.CONNECTION_TIMEOUT, DEFAULT_CONNECTION_TIMEOUT );
     }
 
     /**
@@ -356,9 +355,9 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
      * @param soTimeout socket timeout.
      * @since 2.1
      */
-    public void setSoTimeout(final FileSystemOptions opts, final int soTimeout)
+    public void setSoTimeout( final FileSystemOptions opts, final int soTimeout )
     {
-        setParam(opts, HttpConnectionManagerParams.SO_TIMEOUT, Integer.valueOf(soTimeout));
+        setParam( opts, HttpConnectionManagerParams.SO_TIMEOUT, Integer.valueOf( soTimeout ) );
     }
 
     /**
@@ -368,9 +367,9 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
      * @return The socket timeout.
      * @since 2.1
      */
-    public int getSoTimeout(final FileSystemOptions opts)
+    public int getSoTimeout( final FileSystemOptions opts )
     {
-        return getInteger(opts, HttpConnectionManagerParams.SO_TIMEOUT, DEFAULT_SO_TIMEOUT);
+        return getInteger( opts, HttpConnectionManagerParams.SO_TIMEOUT, DEFAULT_SO_TIMEOUT );
     }
 
     /**
@@ -378,9 +377,9 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
      *
      * @param userAgent User Agent String
      */
-    public void setUserAgent(final FileSystemOptions opts, final String userAgent)
+    public void setUserAgent( final FileSystemOptions opts, final String userAgent )
     {
-        setParam(opts, "userAgent", userAgent);
+        setParam( opts, "userAgent", userAgent );
     }
 
     /**
@@ -388,34 +387,10 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
      *
      * @return User provided User-Agent string, otherwise default of: Jakarta-Commons-VFS
      */
-    public String getUserAgent(final FileSystemOptions opts)
+    public String getUserAgent( final FileSystemOptions opts )
     {
-        final String userAgent = (String) getParam(opts, KEY_USER_AGENT);
+        final String userAgent = (String) getParam( opts, KEY_USER_AGENT );
         return userAgent != null ? userAgent : DEFAULT_USER_AGENT;
-    }
-    
-    /**
-     * Allows setting of a custom trust strategy, allowing to accept custom SSL
-     * certificates
-     * 
-     * @param opts file system options
-     * @param ts custom trust strategy
-     */
-    public void setTrustStrategies(final FileSystemOptions opts, final TrustStrategy[] ts) 
-    {
-    	// add copy of strategies
-    	setParam(opts, "trustStrategies", Arrays.copyOf(ts, ts.length));
-    }
-    
-    /**
-     * Return custom trust-strategies (if defined)
-     * 
-     * @param opts file system options
-     * @return User-provided trust strategy, or null if not defined
-     */
-    public TrustStrategy[] getTrustStrategies(final FileSystemOptions opts) 
-    {
-    	return (TrustStrategy[])getParam(opts, "trustStrategies");
     }
 
     /**
@@ -425,17 +400,44 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
      * @param opts file system options
      * @param ts custom trust strategy
      */
-    public void addTrustStrategy(final FileSystemOptions opts, final TrustStrategy ts) 
+    public void setTrustStrategies( final FileSystemOptions opts, final TrustStrategy[] ts )
     {
-    	// add copy of strategies
-    	TrustStrategy[] strategies = getTrustStrategies(opts);
-    	if (strategies == null) {
-    		strategies = new TrustStrategy[]{ts};
-    	} else {
-    		strategies = Arrays.copyOf(strategies, strategies.length+1);
-    		strategies[strategies.length-1] = ts;
-    	}
-    	setParam(opts, "trustStrategies", strategies);
+        // add copy of strategies
+        setParam( opts, "trustStrategies", Arrays.copyOf( ts, ts.length ) );
+    }
+
+    /**
+     * Return custom trust-strategies (if defined)
+     * 
+     * @param opts file system options
+     * @return User-provided trust strategy, or null if not defined
+     */
+    public TrustStrategy[] getTrustStrategies( final FileSystemOptions opts )
+    {
+        return (TrustStrategy[]) getParam( opts, "trustStrategies" );
+    }
+
+    /**
+     * Allows setting of a custom trust strategy, allowing to accept custom SSL
+     * certificates
+     * 
+     * @param opts file system options
+     * @param ts custom trust strategy
+     */
+    public void addTrustStrategy( final FileSystemOptions opts, final TrustStrategy ts )
+    {
+        // add copy of strategies
+        TrustStrategy[] strategies = getTrustStrategies( opts );
+        if ( strategies == null )
+        {
+            strategies = new TrustStrategy[] { ts };
+        }
+        else
+        {
+            strategies = Arrays.copyOf( strategies, strategies.length + 1 );
+            strategies[strategies.length - 1] = ts;
+        }
+        setParam( opts, "trustStrategies", strategies );
     }
 
     /**
@@ -445,21 +447,21 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
      * @param opts file system options
      * @param ks custom key stores
      */
-    public void setKeyStores(final FileSystemOptions opts, final KeyStore[] ks) 
+    public void setKeyStores( final FileSystemOptions opts, final KeyStore[] ks )
     {
-    	// add copy of strategies
-    	setParam(opts, "keyStores", Arrays.copyOf(ks, ks.length));
+        // add copy of strategies
+        setParam( opts, "keyStores", Arrays.copyOf( ks, ks.length ) );
     }
-    
+
     /**
      * Return custom key stores (if defined)
      * 
      * @param opts file system options
      * @return User-provided key store, or null if not defined
      */
-    public KeyStore[] getKeyStores(final FileSystemOptions opts) 
+    public KeyStore[] getKeyStores( final FileSystemOptions opts )
     {
-    	return (KeyStore[])getParam(opts, "keyStores");
+        return (KeyStore[]) getParam( opts, "keyStores" );
     }
 
     /**
@@ -469,142 +471,171 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder
      * @param opts file system options
      * @param ks custom key store
      */
-    public void addKeyStore(final FileSystemOptions opts, final KeyStore ks) 
+    public void addKeyStore( final FileSystemOptions opts, final KeyStore ks )
     {
-    	// add copy of strategies
-    	KeyStore[] keystores = getKeyStores(opts);
-    	if (keystores == null) {
-    		keystores = new KeyStore[]{ks};
-    	} else {
-    		keystores = Arrays.copyOf(keystores, keystores.length+1);
-    		keystores[keystores.length-1] = ks;
-    	}
-    	setParam(opts, "keyStores", keystores);
+        // add copy of strategies
+        KeyStore[] keystores = getKeyStores( opts );
+        if ( keystores == null )
+        {
+            keystores = new KeyStore[] { ks };
+        }
+        else
+        {
+            keystores = Arrays.copyOf( keystores, keystores.length + 1 );
+            keystores[keystores.length - 1] = ks;
+        }
+        setParam( opts, "keyStores", keystores );
     }
-    
+
     /**
      * Retrieves the custom HostnameVerifier for SSL connections
      * 
      * @param opts file system options
      * @return the provided HostnameVerifier, or null for default
      */
-    public HostnameVerifier getSSLHostnameVerifier(final FileSystemOptions opts) {
-    	return (HostnameVerifier)getParam(opts, "sslHostnameVerifier");
+    public HostnameVerifier getSSLHostnameVerifier( final FileSystemOptions opts )
+    {
+        return (HostnameVerifier) getParam( opts, "sslHostnameVerifier" );
     }
-    
+
     /**
      * Sets a custom HostnameVerifier for SSL connections
      * 
      * @param opts file system options
      * @param hv hostname verifier, or null to use the default
      */
-    public void setSSLHostnameVerifier(final FileSystemOptions opts, final HostnameVerifier hv) {
-    	setParam(opts, "sslHostnameVerifier", hv);
+    public void setSSLHostnameVerifier( final FileSystemOptions opts, final HostnameVerifier hv )
+    {
+        setParam( opts, "sslHostnameVerifier", hv );
     }
-    
+
     /**
      * Attempts to determine the set of supported SSL protocols
      * @return supported protocols, if available, null otherwise
      */
-    public String[] getSupportedSSLProtocols() {
-    	try {
-    		SSLContextBuilder contextBuilder = new SSLContextBuilder();
-    		SSLContext context = contextBuilder.build();
-    		SSLSocketFactory sf = context.getSocketFactory();
-    		SSLSocket socket = (SSLSocket) sf.createSocket();
+    public String[] getSupportedSSLProtocols()
+    {
+        try
+        {
+            SSLContextBuilder contextBuilder = new SSLContextBuilder();
+            SSLContext context = contextBuilder.build();
+            SSLSocketFactory sf = context.getSocketFactory();
+            SSLSocket socket = (SSLSocket) sf.createSocket();
 
-    		return socket.getSupportedProtocols();
-    	} catch(Exception e){}
-    	return null;
+            return socket.getSupportedProtocols();
+        }
+        catch ( Exception e )
+        {
+        }
+        return null;
     }
-    
+
     /**
      * Attempts to determine the set of default enabled SSL protocols
      * @return default protocols, if available, null otherwise
      */
-    public String[] getDefaultSSLProtocols() {
-    	try {
-    		SSLContextBuilder contextBuilder = new SSLContextBuilder();
-    		SSLContext context = contextBuilder.build();
-    		SSLSocketFactory sf = context.getSocketFactory();
-    		SSLSocket socket = (SSLSocket) sf.createSocket();
+    public String[] getDefaultSSLProtocols()
+    {
+        try
+        {
+            SSLContextBuilder contextBuilder = new SSLContextBuilder();
+            SSLContext context = contextBuilder.build();
+            SSLSocketFactory sf = context.getSocketFactory();
+            SSLSocket socket = (SSLSocket) sf.createSocket();
 
-    		return socket.getEnabledProtocols();
-    	} catch(Exception e){}
-    	return null;
+            return socket.getEnabledProtocols();
+        }
+        catch ( Exception e )
+        {
+        }
+        return null;
     }
-    
+
     /**
      * Get the custom set of enabled SSL protocols
      * 
      * @param opts file system options
      * @return enabled protocols (null for system defaults)
      */
-    public String[] getEnabledSSLProtocols(final FileSystemOptions opts) {
-    	return (String[])getParam(opts, "sslProtocols");    	
+    public String[] getEnabledSSLProtocols( final FileSystemOptions opts )
+    {
+        return (String[]) getParam( opts, "sslProtocols" );
     }
-    
+
     /**
      * Enable a set of SSL protocols
      * 
      * @param opts file system options
      * @param protocols enabled protocols (null for system defaults)
      */
-    public void setEnabledSSLProtocols(final FileSystemOptions opts, String[] protocols) {
-    	// add copy of strategies
-    	setParam(opts, "sslProtocols", Arrays.copyOf(protocols, protocols.length));
+    public void setEnabledSSLProtocols( final FileSystemOptions opts, String[] protocols )
+    {
+        // add copy of strategies
+        setParam( opts, "sslProtocols", Arrays.copyOf( protocols, protocols.length ) );
     }
-    
+
     /**
      * Attempts to determine the set of supported SSL cipher suites
      * @return supported suites, if available, null otherwise
      */
-    public String[] getSupportedSSLCipherSuites() {
-    	try {
-    		SSLContextBuilder contextBuilder = new SSLContextBuilder();
-    		SSLContext context = contextBuilder.build();
-    		SSLSocketFactory sf = context.getSocketFactory();
-    		SSLSocket socket = (SSLSocket) sf.createSocket();
+    public String[] getSupportedSSLCipherSuites()
+    {
+        try
+        {
+            SSLContextBuilder contextBuilder = new SSLContextBuilder();
+            SSLContext context = contextBuilder.build();
+            SSLSocketFactory sf = context.getSocketFactory();
+            SSLSocket socket = (SSLSocket) sf.createSocket();
 
-    		return socket.getSupportedCipherSuites();
-    	} catch(Exception e){}
-    	return null;
+            return socket.getSupportedCipherSuites();
+        }
+        catch ( Exception e )
+        {
+        }
+        return null;
     }
-    
+
     /**
      * Attempts to determine the set of default enabled SSL cipher suites
      * @return default suites, if available, null otherwise
      */
-    public String[] getDefaultSSLCipherSuites() {
-    	try {
-    		SSLContextBuilder contextBuilder = new SSLContextBuilder();
-    		SSLContext context = contextBuilder.build();
-    		SSLSocketFactory sf = context.getSocketFactory();
-    		SSLSocket socket = (SSLSocket) sf.createSocket();
+    public String[] getDefaultSSLCipherSuites()
+    {
+        try
+        {
+            SSLContextBuilder contextBuilder = new SSLContextBuilder();
+            SSLContext context = contextBuilder.build();
+            SSLSocketFactory sf = context.getSocketFactory();
+            SSLSocket socket = (SSLSocket) sf.createSocket();
 
-    		return socket.getEnabledCipherSuites();
-    	} catch(Exception e){}
-    	return null;
+            return socket.getEnabledCipherSuites();
+        }
+        catch ( Exception e )
+        {
+        }
+        return null;
     }
-    
+
     /**
      * Enable a set of SSL cipher suites
      * 
      * @param opts file system options
      * @param ciphers enabled ciphers (null for system defaults)
      */
-    public void setEnabledSSLCipherSuites(final FileSystemOptions opts, String[] ciphers) {
-    	setParam(opts, "sslCipherSuites", Arrays.copyOf(ciphers, ciphers.length));
+    public void setEnabledSSLCipherSuites( final FileSystemOptions opts, String[] ciphers )
+    {
+        setParam( opts, "sslCipherSuites", Arrays.copyOf( ciphers, ciphers.length ) );
     }
-    
+
     /**
      * Get the custom set of enabled SSL cipher suites
      * 
      * @param opts file system options
      * @return enabled ciphers (null for system defaults)
      */
-    public String[] getEnabledSSLCipherSuites(final FileSystemOptions opts) {
-    	return (String[])getParam(opts, "sslCipherSuites");    	
+    public String[] getEnabledSSLCipherSuites( final FileSystemOptions opts )
+    {
+        return (String[]) getParam( opts, "sslCipherSuites" );
     }
 
     @Override

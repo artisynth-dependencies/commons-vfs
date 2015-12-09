@@ -59,52 +59,59 @@ import com.github.sardine.DavResource;
 import com.github.sardine.impl.SardineException;
 import com.github.sardine.util.SardineUtil;
 
+/**
+ * Webdav file object based on Sardine
+ * 
+ * @author Antonio
+ * @param <FS>
+ */
 public class WebdavFileObject<FS extends WebdavFileSystem>
-extends AbstractFileObject<FS>
+    extends AbstractFileObject<FS>
 {
-    
-    final Set<QName> VERSION_PROPERTIES = new HashSet<QName>(
-        Arrays.asList( new QName[]{
-            DavResources.COMMENT,
-            DavResources.CREATOR_DISPLAYNAME,
-            DavResources.CHECKED_IN,
-            DavResources.CHECKED_OUT,
-            DavResources.AUTO_VERSION} ));
 
-    public class WebdavOutputStream extends MonitorOutputStream
+    final Set<QName> VERSION_PROPERTIES = new HashSet<QName>( Arrays.asList( new QName[] {
+        DavResources.COMMENT,
+        DavResources.CREATOR_DISPLAYNAME,
+        DavResources.CHECKED_IN,
+        DavResources.CHECKED_OUT,
+        DavResources.AUTO_VERSION } ) );
+
+    public class WebdavOutputStream
+        extends MonitorOutputStream
     {
         WebdavFileObject<FS> file;
 
-        public WebdavOutputStream(final WebdavFileObject<FS> file)
+        public WebdavOutputStream( final WebdavFileObject<FS> file )
         {
-            super(new ByteArrayOutputStream());
+            super( new ByteArrayOutputStream() );
             this.file = file;
         }
 
-        private boolean createVersion( final String urlString ) {
+        private boolean createVersion( final String urlString )
+        {
             return sardine.createVersion( urlString );
         }
 
-        private void setUserName(final URLFileName fileName, final String url)
+        private void setUserName( final URLFileName fileName, final String url )
             throws IOException
-        { 
-            String name = builder.getCreatorName(fileSystem.getFileSystemOptions());
+        {
+            String name = builder.getCreatorName( fileSystem.getFileSystemOptions() );
             final String userName = fileName.getUserName();
-            HashMap<QName,String> propMap = new HashMap<QName,String>();
-            if (name == null)
+            HashMap<QName, String> propMap = new HashMap<QName, String>();
+            if ( name == null )
             {
                 name = userName;
             }
             else
             {
-                if (userName != null && !userName.equals( name ))
+                if ( userName != null && !userName.equals( name ) )
                 {
                     final String comment = "Modified by user " + userName;
                     propMap.put( DavResources.COMMENT, comment );
                 }
             }
             propMap.put( DavResources.CREATOR_DISPLAYNAME, name );
-            
+
             sardine.patch( url, propMap );
         }
 
@@ -114,71 +121,81 @@ extends AbstractFileObject<FS>
          * @see org.apache.commons.vfs2.util.MonitorOutputStream#onClose()
          */
         @Override
-        protected void onClose() throws IOException
+        protected void onClose()
+            throws IOException
         {
             final URLFileName fileName = (URLFileName) getName();
-            String url = getFullUrl(fileName, true);
+            String url = getFullUrl( fileName, true );
 
             // check if versioning
-            if (builder.isVersioning(fileSystem.getFileSystemOptions()))
+            if ( builder.isVersioning( fileSystem.getFileSystemOptions() ) )
             {
                 boolean fileExists = sardine.exists( url );
-                boolean isCheckedIn = true;                
-                
-                if (fileExists) {
-                    
-                    // look for version properties
-                    Map<QName,String> props = sardine.getProperties( url, true );
+                boolean isCheckedIn = true;
 
-                    if (props != null) {
+                if ( fileExists )
+                {
+
+                    // look for version properties
+                    Map<QName, String> props = sardine.getProperties( url, VERSION_PROPERTIES );
+
+                    if ( props != null )
+                    {
 
                         // look for CHECKED_OUT
-                        if (props.containsKey(DavResources.CHECKED_OUT))
+                        String checkout = props.get( DavResources.CHECKED_OUT );
+                        if ( checkout != null && !"".equals( checkout ) )
                         {
                             isCheckedIn = false;
                         }
-                        else if (!props.containsKey(DavResources.CHECKED_IN))
+                        else
                         {
-                            String prop = props.get(DavResources.AUTO_VERSION);
-                            if (prop != null)
+                            String prop = props.get( DavResources.AUTO_VERSION );
+                            if ( prop != null && DavResources.CHECKOUT_CHECKIN.equals( prop ) )
                             {
-                                if (DavResources.CHECKOUT_CHECKIN.equals(prop))
+                                createVersion( url );
+                            }
+                            else
+                            {
+                                String checkin = props.get( DavResources.CHECKED_IN );
+                                if ( checkin != null && !"".equals( checkin ) )
                                 {
-                                    createVersion( url );
+                                    isCheckedIn = true;
                                 }
                             }
                         } // not checked in
                     } // has custom properties
                 } // file exists
 
-                if (fileExists && isCheckedIn)
+                if ( fileExists && isCheckedIn )
                 {
                     try
                     {
                         sardine.checkout( url );
                         isCheckedIn = false;
                     }
-                    catch (final FileSystemException ex)
+                    catch ( final FileSystemException ex )
                     {
                         // Ignore the exception checking out.
                     }
                 }
 
                 // put data
-                try {
-                    sardine.put( url, ( (ByteArrayOutputStream) out ).toByteArray() );
-                    setUserName(fileName, url);
-                }
-                catch (final IOException ex)
+                try
                 {
-                    if (!isCheckedIn)
+                    sardine.put( url, ( (ByteArrayOutputStream) out ).toByteArray() );
+                    setUserName( fileName, url );
+                }
+                catch ( final IOException ex )
+                {
+                    if ( !isCheckedIn )
                     {
                         try
                         {
                             sardine.uncheckout( url );
                             isCheckedIn = true;
                         }
-                        catch (final Exception e)
+                        catch ( final Exception e )
                         {
                             // Ignore the exception. Going to throw original.
                         }
@@ -187,55 +204,69 @@ extends AbstractFileObject<FS>
                 }
 
                 // now the file should exist
-                if (!fileExists)
+                if ( !fileExists )
                 {
                     createVersion( url );
                     try
                     {
-                        Map<QName,String> props = sardine.getProperties( url, VERSION_PROPERTIES );
-                         
-                        if (props != null) {
-                            isCheckedIn = !props.containsKey(DavResources.CHECKED_OUT);
-                        } else {
+                        Map<QName, String> props = sardine.getProperties( url, VERSION_PROPERTIES );
+
+                        if ( props != null )
+                        {
+                            String checkout = props.get( DavResources.CHECKED_OUT );
+                            if ( checkout != null && !"".equals( checkout ) )
+                            {
+                                isCheckedIn = false;
+                            }
+                            else
+                            {
+                                isCheckedIn = true;
+                            }
+                        }
+                        else
+                        {
                             isCheckedIn = false;
                         }
                     }
-                    catch (final FileNotFoundException fnfe)
+                    catch ( final FileNotFoundException fnfe )
                     {
                         // Ignore the error
                     }
                 }
-                if (!isCheckedIn)
+                if ( !isCheckedIn )
                 {
                     sardine.checkin( url );
-                    
-                    // take a look at properties now
-                    Map<QName,String> props = sardine.getProperties( url, VERSION_PROPERTIES );
-                    props.toString();
-                }                
 
+                    //   // take a look at properties now
+                    //   Map<QName, String> props = sardine.getProperties( url, VERSION_PROPERTIES );
+                    //   props.toString();
+                }
 
-            } else
+            }
+            else
             {
                 sardine.put( url, ( (ByteArrayOutputStream) out ).toByteArray() );
                 try
                 {
-                    setUserName(fileName, url );
+                    setUserName( fileName, url );
                 }
-                catch (final IOException e)
+                catch ( final IOException e )
                 {
                     // Ignore the exception if unable to set the user name.
                 }
             }
-            if (file != null) {
-                ((DefaultFileContent) file.getContent()).resetAttributes();
+            if ( file != null )
+            {
+                ( (DefaultFileContent) file.getContent() ).resetAttributes();
             }
 
         }
     }
 
     private static final String MIME_DIRECTORY = "httpd/unix-directory";
+
     private final WebdavFileSystemConfigBuilder builder;
+
     private final SardineExtended sardine;
 
     FS fileSystem;
@@ -288,6 +319,7 @@ extends AbstractFileObject<FS>
         return null;
     }
 
+    // maybe add to a map (add if not null)
     private boolean maybeAdd( Map<String, Object> map, String label, Object o )
     {
         boolean added = false;
@@ -317,7 +349,7 @@ extends AbstractFileObject<FS>
     {
         final Map<String, Object> attributes = new HashMap<String, Object>();
         final DavResource resource = getResource();
-   
+
         if ( resource != null )
         {
             // build map
@@ -334,13 +366,14 @@ extends AbstractFileObject<FS>
             for ( Map.Entry<String, String> entry : resource.getCustomProps().entrySet() )
             {
                 // add regardless of whether or not value is null
-                attributes.put(entry.getKey(), entry.getValue() );
+                attributes.put( entry.getKey(), entry.getValue() );
             }
         }
-        
-        Map<QName,String> props = sardine.getProperties( getHostRelativeUrl(), VERSION_PROPERTIES );
-        for (Entry<QName,String> entry : props.entrySet()) {
-            maybeAdd(attributes, entry.getKey().getLocalPart(), entry.getValue() );
+
+        Map<QName, String> props = sardine.getProperties( getHostRelativeUrl(), VERSION_PROPERTIES );
+        for ( Entry<QName, String> entry : props.entrySet() )
+        {
+            maybeAdd( attributes, entry.getKey().getLocalPart(), entry.getValue() );
         }
 
         return attributes;
@@ -378,7 +411,7 @@ extends AbstractFileObject<FS>
     protected OutputStream doGetOutputStream( boolean bAppend )
         throws Exception
     {
-        return new WebdavOutputStream(this);
+        return new WebdavOutputStream( this );
     }
 
     @Override
@@ -505,6 +538,7 @@ extends AbstractFileObject<FS>
         return true;
     }
 
+    @Override
     protected FileObject[] doListChildrenResolved()
         throws Exception
     {
@@ -594,11 +628,12 @@ extends AbstractFileObject<FS>
 
         return stream;
     }
-    
+
     @Override
-    protected RandomAccessContent doGetRandomAccessContent(final RandomAccessMode mode) throws Exception
+    protected RandomAccessContent doGetRandomAccessContent( final RandomAccessMode mode )
+        throws Exception
     {
-        return new WebdavRandomAccessContent(this, mode);
+        return new WebdavRandomAccessContent( this, mode );
     }
 
     @Override
@@ -614,7 +649,8 @@ extends AbstractFileObject<FS>
     {
         List<String> properties = new LinkedList<String>();
         properties.add( attrName );
-        sardine.patch( getHostRelativeUrl(), Collections.<QName, String> emptyMap(), SardineUtil.toQName( properties ) );
+        sardine.patch( getHostRelativeUrl(), Collections.<QName, String> emptyMap(),
+                       SardineUtil.toQName( properties ) );
     }
 
     protected String getFullUrl()
@@ -649,11 +685,12 @@ extends AbstractFileObject<FS>
             HttpHost host = fileSystem.getHost();
             // replace scheme with that from host
             String id = null;
-            if (addIdentity) {
+            if ( addIdentity )
+            {
                 id = uri.getUserInfo();
             }
-            uri = new URI( host.getSchemeName(), id, uri.getHost(), uri.getPort(), uri.getPath(),
-                           uri.getQuery(), uri.getFragment() );
+            uri = new URI( host.getSchemeName(), id, uri.getHost(), uri.getPort(), uri.getPath(), uri.getQuery(),
+                           uri.getFragment() );
         }
         catch ( URISyntaxException se )
         {
@@ -691,7 +728,7 @@ extends AbstractFileObject<FS>
 
         try
         {
-            // technically I only need the relative path/query
+            // keep only relative URI
             uri = new URI( null, null, file.getPathDecoded(), file.getQueryString(), null );
         }
         catch ( URISyntaxException se )
@@ -702,6 +739,11 @@ extends AbstractFileObject<FS>
         return uri;
     }
 
+    /**
+     * Remove host from a URI
+     * @param uri
+     * @return
+     */
     protected static URI stripHost( URI uri )
     {
         URI out = null;

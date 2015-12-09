@@ -1,18 +1,16 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * Licensed to the Apache Software Foundation (ASF) under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional information regarding
+ * copyright ownership. The ASF licenses this file to You under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance with the License. You may obtain a
+ * copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
  */
 package org.apache.commons.vfs2.provider.http;
 
@@ -43,21 +41,19 @@ public class HttpFileProvider
     extends AbstractOriginatingFileProvider
 {
     /** Authenticator information. */
-    public static final UserAuthenticationData.Type[] AUTHENTICATOR_TYPES = new UserAuthenticationData.Type[]
-        {
-            UserAuthenticationData.USERNAME, UserAuthenticationData.PASSWORD
-        };
+    public static final UserAuthenticationData.Type[] AUTHENTICATOR_TYPES = new UserAuthenticationData.Type[] {
+        UserAuthenticationData.USERNAME,
+        UserAuthenticationData.PASSWORD };
 
-    static final Collection<Capability> capabilities = Collections.unmodifiableCollection(Arrays.asList(new Capability[]
-    {
-        Capability.GET_TYPE,
-        Capability.READ_CONTENT,
-        Capability.URI,
-        Capability.GET_LAST_MODIFIED,
-        Capability.ATTRIBUTES,
-        Capability.RANDOM_ACCESS_READ,
-        Capability.DIRECTORY_READ_CONTENT,
-    }));
+    static final Collection<Capability> capabilities = Collections
+        .unmodifiableCollection( Arrays.asList( new Capability[] {
+            Capability.GET_TYPE,
+            Capability.READ_CONTENT,
+            Capability.URI,
+            Capability.GET_LAST_MODIFIED,
+            Capability.ATTRIBUTES,
+            Capability.RANDOM_ACCESS_READ,
+            Capability.DIRECTORY_READ_CONTENT, } ) );
 
     /**
      * Constructs a new provider.
@@ -65,10 +61,11 @@ public class HttpFileProvider
     public HttpFileProvider()
     {
         super();
-        setFileNameParser(HttpFileNameParser.getInstance());
+        setFileNameParser( HttpFileNameParser.getInstance() );
     }
 
-    protected void testConnection( HttpConnectionClient client ) throws FileSystemException
+    protected void testConnection( HttpConnectionClient client )
+        throws FileSystemException
     {
 
         // build and execute client
@@ -88,14 +85,14 @@ public class HttpFileProvider
         {
             throw new FileSystemException( "vfs.provider.http/head.error", new Object[] { response } );
         }
-        
+
     }
-    
+
     /**
      * Creates a {@link FileSystem}.
      */
     @Override
-    protected FileSystem doCreateFileSystem(final FileName name, final FileSystemOptions fileSystemOptions)
+    protected FileSystem doCreateFileSystem( final FileName name, final FileSystemOptions fileSystemOptions )
         throws FileSystemException
     {
         // Create the file system
@@ -105,30 +102,30 @@ public class HttpFileProvider
         HttpConnectionClientManager httpClientManager;
         try
         {
-            authData = UserAuthenticatorUtils.authenticate(fileSystemOptions, AUTHENTICATOR_TYPES);
+            authData = UserAuthenticatorUtils.authenticate( fileSystemOptions, AUTHENTICATOR_TYPES );
 
-            httpClientManager = HttpClientManagerFactory.createConnectionManager(
-                rootName.getScheme(),
-                rootName.getHostName(),
-                rootName.getPort(),
-                UserAuthenticatorUtils.toString(UserAuthenticatorUtils.getData(authData,
-                    UserAuthenticationData.USERNAME, UserAuthenticatorUtils.toChar(rootName.getUserName()))),
-                UserAuthenticatorUtils.toString(UserAuthenticatorUtils.getData(authData,
-                    UserAuthenticationData.PASSWORD, UserAuthenticatorUtils.toChar(rootName.getPassword()))),
-                fileSystemOptions);
-            
+            httpClientManager = HttpClientManagerFactory
+                .createConnectionManager( rootName.getScheme(), rootName.getHostName(), rootName.getPort(),
+                                          UserAuthenticatorUtils.toString( UserAuthenticatorUtils
+                                              .getData( authData, UserAuthenticationData.USERNAME,
+                                                        UserAuthenticatorUtils.toChar( rootName.getUserName() ) ) ),
+                                          UserAuthenticatorUtils.toString( UserAuthenticatorUtils
+                                              .getData( authData, UserAuthenticationData.PASSWORD,
+                                                        UserAuthenticatorUtils.toChar( rootName.getPassword() ) ) ),
+                                                                                  fileSystemOptions );
+
             // test connection
             HttpHost host = new HttpHost( rootName.getHostName(), rootName.getPort(), rootName.getScheme() ); // target host
             HttpConnectionClient client = httpClientManager.createClient( host );
-            testConnection(client);
-            
+            testConnection( client );
+
         }
         finally
         {
-            UserAuthenticatorUtils.cleanup(authData);
+            UserAuthenticatorUtils.cleanup( authData );
         }
 
-        return new HttpFileSystem(rootName, httpClientManager, fileSystemOptions);
+        return new HttpFileSystem( rootName, httpClientManager, fileSystemOptions );
     }
 
     @Override

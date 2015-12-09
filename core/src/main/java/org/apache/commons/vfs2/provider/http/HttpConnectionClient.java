@@ -65,7 +65,7 @@ public class HttpConnectionClient
 
         return response;
     }
-    
+
     /**
      * Executes an Http request
      * @param request
@@ -88,7 +88,7 @@ public class HttpConnectionClient
 
         return response;
     }
-    
+
     /**
      * Executes an Http request
      * @param request

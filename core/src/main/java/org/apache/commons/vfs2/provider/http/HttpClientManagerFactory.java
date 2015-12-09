@@ -64,7 +64,7 @@ public final class HttpClientManagerFactory
     {
         return createConnectionManager( HttpFileSystemConfigBuilder.getInstance(), scheme, hostname, port, username,
                                         password, fileSystemOptions );
-    }    
+    }
 
     /**
      * Creates a new connection builder for generating clients to the server.
@@ -94,7 +94,7 @@ public final class HttpClientManagerFactory
 
             // credentials for either proxy or host
             HttpClientContext context = new HttpClientContext(); // execution context
-            
+
             CredentialsProvider credentials = new BasicCredentialsProvider();
             context.setCredentialsProvider( credentials );
 
@@ -102,7 +102,7 @@ public final class HttpClientManagerFactory
             RegistryBuilder<ConnectionSocketFactory> socketRegistryBuilder = RegistryBuilder.create();
             socketRegistryBuilder.register( "http", PlainConnectionSocketFactory.getSocketFactory() );
             socketRegistryBuilder.register( "https", SSLConnectionSocketFactory.getSocketFactory() );
-  
+
             if ( fileSystemOptions != null )
             {
 
@@ -203,25 +203,25 @@ public final class HttpClientManagerFactory
 
                 credentials.setCredentials( scope, creds );
             }
-            
+
             // timeouts and redirects
             int connectionTimeout = builder.getConnectionTimeout( fileSystemOptions );
             int socketTimeout = builder.getSoTimeout( fileSystemOptions );
             boolean followRedirects = builder.getFollowRedirect( fileSystemOptions );
             boolean allowCircularRedirects = builder.getCircularRedirectsAllowed( fileSystemOptions );
-            
+
             RequestConfig.Builder requestConfig = RequestConfig.custom();
-            requestConfig.setExpectContinueEnabled(false);
-            requestConfig.setConnectTimeout(connectionTimeout);
-            requestConfig.setSocketTimeout(socketTimeout);
+            requestConfig.setExpectContinueEnabled( false );
+            requestConfig.setConnectTimeout( connectionTimeout );
+            requestConfig.setSocketTimeout( socketTimeout );
             requestConfig.setRedirectsEnabled( followRedirects );
             requestConfig.setCircularRedirectsAllowed( allowCircularRedirects );
-            
+
             clientBuilder.setDefaultRequestConfig( requestConfig.build() );
 
             // user agent
-            String userAgent = builder.getUserAgent(fileSystemOptions);
-            clientBuilder.setUserAgent(userAgent);
+            String userAgent = builder.getUserAgent( fileSystemOptions );
+            clientBuilder.setUserAgent( userAgent );
 
             // Use pooled connection manager
             PoolingHttpClientConnectionManager manager = new PoolingHttpClientConnectionManager( socketRegistryBuilder

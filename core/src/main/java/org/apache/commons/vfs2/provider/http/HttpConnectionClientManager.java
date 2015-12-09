@@ -25,8 +25,11 @@ public class HttpConnectionClientManager
 {
 
     private HttpClientConnectionManager manager;
+
     private HttpClientBuilder builder;
+
     private HttpClientContext context;
+
     private HttpHost host;
 
     public HttpConnectionClientManager()
@@ -39,19 +42,23 @@ public class HttpConnectionClientManager
 
     public HttpConnectionClientManager( HttpClientConnectionManager manager )
     {
-        if (manager != null) {
+        if ( manager != null )
+        {
             this.manager = manager;
-        } else {
+        }
+        else
+        {
             this.manager = new PoolingHttpClientConnectionManager();
         }
     }
-    
+
     public void setClientContext( HttpClientContext context )
     {
         this.context = context;
     }
-    
-    public void setHost(HttpHost host) {
+
+    public void setHost( HttpHost host )
+    {
         this.host = host;
     }
 
@@ -61,34 +68,41 @@ public class HttpConnectionClientManager
         this.builder.setConnectionManager( manager );
         this.builder.setConnectionManagerShared( true );
     }
-    
-    public HttpConnectionClient createClient() {
-        return createClient(host);
+
+    public HttpConnectionClient createClient()
+    {
+        return createClient( host );
     }
-    
-    public HttpConnectionClient createClient(HttpHost host) {
+
+    public HttpConnectionClient createClient( HttpHost host )
+    {
         CloseableHttpClient client = builder.build();
         return new HttpConnectionClient( client, host, context );
     }
-    
-    public HttpClientConnectionManager getClientManager() {
+
+    public HttpClientConnectionManager getClientManager()
+    {
         return manager;
     }
-    
-    public HttpClientBuilder getClientBuilder() {
+
+    public HttpClientBuilder getClientBuilder()
+    {
         return builder;
     }
-    
-    public HttpClientContext getClientContext() {
+
+    public HttpClientContext getClientContext()
+    {
         return context;
     }
-    
-    public HttpHost getHost() {
-    	return host;
+
+    public HttpHost getHost()
+    {
+        return host;
     }
-    
-    public void shutdown() {
+
+    public void shutdown()
+    {
         manager.shutdown();
     }
-    
+
 }

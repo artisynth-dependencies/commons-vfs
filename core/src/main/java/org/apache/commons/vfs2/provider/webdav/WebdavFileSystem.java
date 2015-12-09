@@ -31,23 +31,24 @@ import org.apache.http.HttpHost;
  *
  * @since 2.0
  */
-public class WebdavFileSystem extends AbstractFileSystem
+public class WebdavFileSystem
+    extends AbstractFileSystem
 {
     private WebdavSardine sardine;
+
     HttpConnectionClientManager manager;
-    
-    protected WebdavFileSystem( final GenericFileName rootName, 
-                                final HttpConnectionClientManager clientManager,
+
+    protected WebdavFileSystem( final GenericFileName rootName, final HttpConnectionClientManager clientManager,
                                 final FileSystemOptions fileSystemOptions )
     {
         super( rootName, null, fileSystemOptions );
         manager = clientManager;
-        sardine = new WebdavSardine( 
-        		clientManager.getHost(), clientManager.getClientBuilder(), 
-        		clientManager.getClientContext() );        
+        sardine = new WebdavSardine( clientManager.getHost(), clientManager.getClientBuilder(),
+                                     clientManager.getClientContext() );
     }
-    
-    public HttpHost getHost() {
+
+    public HttpHost getHost()
+    {
         return manager.getHost();
     }
 
@@ -55,21 +56,21 @@ public class WebdavFileSystem extends AbstractFileSystem
      * Adds the capabilities of this file system.
      */
     @Override
-    protected void addCapabilities(final Collection<Capability> caps)
+    protected void addCapabilities( final Collection<Capability> caps )
     {
-        caps.addAll(WebdavFileProvider.capabilities);
+        caps.addAll( WebdavFileProvider.capabilities );
     }
-    
+
     /** @since 2.0 */
     @Override
     public void closeCommunicationLink()
     {
-        if (manager != null)
+        if ( manager != null )
         {
             manager.shutdown();
         }
     }
-    
+
     /**
      * Creates a file object.  This method is called only if the requested
      * file is not cached.
@@ -81,8 +82,9 @@ public class WebdavFileSystem extends AbstractFileSystem
     {
         return new WebdavFileObject<WebdavFileSystem>( name, this, sardine );
     }
-    
-    public WebdavSardine getSardine() {
+
+    public WebdavSardine getSardine()
+    {
         return sardine;
     }
 
