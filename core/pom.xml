@@ -466,6 +466,32 @@
                   </artifactSet>
                   -->
                   <minimizeJar>true</minimizeJar>
+                  <filters> 
+                    <filter>
+                       <artifact>log4j:log4j</artifact>
+                       <includes>
+                           <include>**</include>
+                       </includes>
+                    </filter> 
+                    <filter>
+                       <artifact>commons-logging:commons-logging</artifact>
+                       <includes>
+                           <include>**</include>
+                       </includes>
+                    </filter>
+                    <filter>
+                       <artifact>com.jcraft:jsch</artifact>
+                       <includes>
+                           <include>**</include>
+                       </includes>
+                    </filter>
+                    <filter>
+                       <artifact>org.apache.commons:commons-compress</artifact>
+                       <includes>
+                           <include>**</include>
+                       </includes>
+                    </filter>
+                </filters>
                 </configuration>
               </execution>
             </executions>
