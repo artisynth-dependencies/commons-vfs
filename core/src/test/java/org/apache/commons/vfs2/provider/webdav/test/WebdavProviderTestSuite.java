@@ -79,9 +79,9 @@ public class WebdavProviderTestSuite extends ProviderTestSuite
         addTests(NamingTests.class);
         addTests(ContentTests.class);
         addTests(ProviderReadTests.class);
+        addTests(ProviderRandomReadTests.class);
         addTests(ProviderWriteTests.class);
         addTests(ProviderWriteAppendTests.class);
-        addTests(ProviderRandomReadTests.class);
         addTests(ProviderRandomReadWriteTests.class);
         addTests(ProviderRandomSetLengthTests.class);
         addTests(ProviderRenameTests.class);

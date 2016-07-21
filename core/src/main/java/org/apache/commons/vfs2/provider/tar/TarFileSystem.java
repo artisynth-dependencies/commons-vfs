@@ -107,8 +107,7 @@ public class TarFileSystem extends AbstractFileSystem
                 TarFileObject parent = null;
                 for (AbstractFileName parentName = (AbstractFileName) name.getParent();
                      parentName != null;
-                     fileObj = parent, 
-                    		 parentName = (AbstractFileName) parentName.getParent())
+                     fileObj = parent, parentName = (AbstractFileName) parentName.getParent())
                 {
                     // Locate the parent
                     parent = (TarFileObject) getFileFromCache(parentName);

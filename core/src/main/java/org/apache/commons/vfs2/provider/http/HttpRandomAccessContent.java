@@ -167,8 +167,7 @@ class HttpRandomAccessContent
     }
 
     @Override
-    public long length()
-        throws IOException
+    public long length() throws IOException
     {
         return fileObject.getContent().getSize();
     }

@@ -192,6 +192,17 @@
               <td>Yes</td>
             </tr>
             <tr>
+              <td><a href="WebDAV">WebDAV</a></td>
+              <td>Yes</td>
+              <td>Yes</td>
+              <td>Yes</td>
+              <td>Yes</td>
+              <td>Yes</td>
+              <td>Read/Write</td>
+              <td>Yes</td>
+              <td>Yes</td>
+            </tr>
+            <tr>
               <td><a href="#Zip, Jar and Tar">Zip</a></td>
               <td>No</td>
               <td>No</td>

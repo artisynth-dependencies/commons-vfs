@@ -514,7 +514,6 @@ public class SftpProviderTestCase extends AbstractProviderTestConfig
                 public void start(final Environment env) throws IOException
                 {
                     int code = 0;
-                    
                     if (command.equals("id -G") || command.equals("id -u"))
                     {
                         new PrintStream(out).println(0);

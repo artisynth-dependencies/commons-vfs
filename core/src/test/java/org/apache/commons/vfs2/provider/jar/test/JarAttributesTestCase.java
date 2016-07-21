@@ -31,9 +31,8 @@ import org.junit.Test;
  * @version $Id$
  */
 public class JarAttributesTestCase extends TestCase
-{
-	private static boolean debug = false;
-	
+{	
+    @SuppressWarnings("unused")
     private void printAttributes(final Map<String, Object> attributes)
     {
         for (final Map.Entry<String, Object> e : attributes.entrySet())
@@ -50,10 +49,7 @@ public class JarAttributesTestCase extends TestCase
         final Map<String, Object> attributes = file.getContent().getAttributes();
         Assert.assertEquals("1.0", attributes.get("Manifest-Version"));
         // Debugging:
-        if (debug) 
-        {
-           this.printAttributes(attributes);
-        }
+        // this.printAttributes(attributes);
     }
 
     @Test
@@ -65,9 +61,6 @@ public class JarAttributesTestCase extends TestCase
         final Map<String, Object> attributes = file.getContent().getAttributes();
         Assert.assertEquals("1.0", attributes.get("Manifest-Version"));
         // Debugging:
-        if (debug) 
-        {
-           this.printAttributes(attributes);
-        }
+        // this.printAttributes(attributes);
     }
 }

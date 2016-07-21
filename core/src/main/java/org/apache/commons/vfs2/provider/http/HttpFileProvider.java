@@ -45,15 +45,16 @@ public class HttpFileProvider
         UserAuthenticationData.USERNAME,
         UserAuthenticationData.PASSWORD };
 
-    static final Collection<Capability> capabilities = Collections
-        .unmodifiableCollection( Arrays.asList( new Capability[] {
-            Capability.GET_TYPE,
-            Capability.READ_CONTENT,
-            Capability.URI,
-            Capability.GET_LAST_MODIFIED,
-            Capability.ATTRIBUTES,
-            Capability.RANDOM_ACCESS_READ,
-            Capability.DIRECTORY_READ_CONTENT, } ) );
+    static final Collection<Capability> capabilities = Collections.unmodifiableCollection(Arrays.asList(new Capability[]
+    {
+        Capability.GET_TYPE,
+        Capability.READ_CONTENT,
+        Capability.URI,
+        Capability.GET_LAST_MODIFIED,
+        Capability.ATTRIBUTES,
+        Capability.RANDOM_ACCESS_READ,
+        Capability.DIRECTORY_READ_CONTENT,
+    }));
 
     /**
      * Constructs a new provider.

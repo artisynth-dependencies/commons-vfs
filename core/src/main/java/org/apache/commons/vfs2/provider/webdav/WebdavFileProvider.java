@@ -38,16 +38,13 @@ import org.apache.commons.vfs2.util.UserAuthenticatorUtils;
  *
  * @since 2.0
  */
-public class WebdavFileProvider
-    extends HttpFileProvider
+public class WebdavFileProvider extends HttpFileProvider
 {
     
     /**
      * The authenticator types used by the WebDAV provider.
      * 
-     * @deprecated Might be removed in the next major version.
      */
-    @Deprecated
     public static final UserAuthenticationData.Type[] AUTHENTICATOR_TYPES = new UserAuthenticationData.Type[]
         {
             UserAuthenticationData.USERNAME, UserAuthenticationData.PASSWORD
