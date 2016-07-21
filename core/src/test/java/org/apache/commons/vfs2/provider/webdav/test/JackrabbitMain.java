@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+// Adapted from JackRabbit (No additional NOTICE required, see VFS-611)
+
 package org.apache.commons.vfs2.provider.webdav.test;
 
 import java.io.File;
@@ -58,11 +60,11 @@ class JackrabbitMain
      */
     public static void main(final String[] args) throws Exception
     {
-        File repoDir = new File("workspace");
-        String[] largs = new String[]{"--port", "8085", "--repo", repoDir.getAbsolutePath()};
-        JackrabbitMain rabbit = new JackrabbitMain(largs);
-        rabbit.run();
-        //new JackrabbitMain(args).run();
+        // File repoDir = new File("workspace");
+        // String[] largs = new String[]{"--port", "8085", "--repo", repoDir.getAbsolutePath()};
+        // JackrabbitMain rabbit = new JackrabbitMain(largs);
+        // rabbit.run();
+        new JackrabbitMain(args).run();
     }
 
     private final Options options = new Options();
