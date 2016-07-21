@@ -17,24 +17,21 @@
    limitations under the License.
   -->
 
-<project
-  xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
   <name>Apache Commons VFS Core</name>
   <groupId>org.apache.commons</groupId>
   <artifactId>commons-vfs2</artifactId>
-  <version>2.1-SNAPSHOT</version>
+  <version>2.2-SNAPSHOT</version>
   <description>Apache Commons VFS is a Virtual File System library.</description>
   <url>http://commons.apache.org/proper/commons-vfs/</url>
 
   <parent>
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-vfs2-project</artifactId>
-    <version>2.1-SNAPSHOT</version>
+    <version>2.2-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
 
@@ -144,6 +141,16 @@
       <artifactId>hadoop-common</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+         <!-- VFS-606 - tools.jar not available in Java 9
+              This exclusion can be removed after upgrading Hadoop
+              to 2.7.1 or later  
+          -->
+          <groupId>jdk.tools</groupId>
+          <artifactId>jdk.tools</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.hadoop</groupId>
@@ -219,9 +226,7 @@
             <phase>process-test-classes</phase>
             <configuration>
               <target>
-                <move
-                  todir="${project.build.testOutputDirectory}/test-data/code"
-                  failonerror="false">
+                <move todir="${project.build.testOutputDirectory}/test-data/code" failonerror="false">
                   <fileset dir="${project.build.testOutputDirectory}/code" />
                 </move>
               </target>
