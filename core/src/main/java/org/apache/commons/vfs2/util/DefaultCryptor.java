@@ -32,8 +32,10 @@ public class DefaultCryptor implements Cryptor
     private static final char[] HEX_CHARS =
             {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
-    private static final byte[] KEY_BYTES = {0x41, 0x70, 0x61, 0x63, 0x68, 0x65, 0x43, 0x6F, 0x6D, 0x6D,
-            0x6F, 0x6E, 0x73, 0x56, 0x46, 0x53};
+    private static final byte[] KEY_BYTES = {(byte)0xB8, (byte)0x13, (byte)0x97, (byte)0x58, 
+                                             (byte)0xCA, (byte)0x57, (byte)0x6D, (byte)0x93, 
+                                             (byte)0x1F, (byte)0x9F, (byte)0x48, (byte)0x6F, 
+                                             (byte)0xD3, (byte)0x52, (byte)0x2C, (byte)0x18};
 
     private static final int INDEX_NOT_FOUND = -1;
 
