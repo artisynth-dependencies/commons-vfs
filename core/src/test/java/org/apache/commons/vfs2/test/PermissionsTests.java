@@ -96,6 +96,7 @@ public class PermissionsTests extends AbstractProviderTestCase
         Assert.assertTrue(file.isWriteable());
 
         // Clear the write permission
+        System.out.println("Changing write permissions on " + file.getName().getPath());
         file.setWritable(false, true);
         Assert.assertFalse(file.isWriteable());
     }
