@@ -1405,8 +1405,10 @@ implements Sardine, SardineExtended, HttpAwareSardine
     public boolean exists( String url )
         throws IOException
     {
-        HttpHead head = new HttpHead( url );
-        return this.execute( head, new ExistsResponseHandler() );
+        // PropFind (owncloud 8 chokes on Head, Ubuntu seems to only send PropFind)
+        //    HttpHead request = new HttpHead( url );
+        HttpPropFind request = new HttpPropFind( url );
+        return this.execute( request, new ExistsResponseHandler() );
     }
 
     @Override

@@ -240,8 +240,7 @@ public class HttpFileObject<FS extends HttpFileSystem>
         return new HttpFileContentInfoFactory();
     }
 
-    HttpResponse getHeadResponse()
-        throws IOException
+    HttpResponse getHeadResponse() throws IOException
     {
         if ( headResponse != null )
         {

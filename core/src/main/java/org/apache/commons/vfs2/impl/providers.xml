@@ -73,11 +73,13 @@
     </provider>
     <provider class-name="org.apache.commons.vfs2.provider.webdav.WebdavFileProvider">
         <scheme name="webdav"/>
+        <scheme name="dav"/>
         <if-available class-name="com.github.sardine.Sardine"/>
         <if-available class-name="org.apache.http.client.CredentialsProvider"/>
     </provider>
     <provider class-name="org.apache.commons.vfs2.provider.webdavs.WebdavsFileProvider">
         <scheme name="webdavs"/>
+        <scheme name="davs"/>
         <if-available class-name="com.github.sardine.Sardine"/>
         <if-available class-name="org.apache.http.client.CredentialsProvider"/>
     </provider>
