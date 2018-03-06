@@ -16,6 +16,7 @@
  */
 package org.apache.commons.vfs2.provider.webdav;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeMap;
 
 import javax.xml.namespace.QName;
 
@@ -46,17 +48,16 @@ import org.apache.commons.vfs2.FileType;
 import org.apache.commons.vfs2.NameScope;
 import org.apache.commons.vfs2.RandomAccessContent;
 import org.apache.commons.vfs2.provider.AbstractFileName;
+import org.apache.commons.vfs2.provider.AbstractFileObject;
 import org.apache.commons.vfs2.provider.DefaultFileContent;
 import org.apache.commons.vfs2.provider.URLFileName;
 import org.apache.commons.vfs2.provider.UriParser;
-import org.apache.commons.vfs2.provider.http.HttpFileObject;
 import org.apache.commons.vfs2.provider.webdav.sardine.DavResources;
 import org.apache.commons.vfs2.provider.webdav.sardine.SardineExtended;
 import org.apache.commons.vfs2.util.MonitorOutputStream;
 import org.apache.commons.vfs2.util.RandomAccessMode;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.HttpRequestBase;
 
 import com.github.sardine.DavResource;
 import com.github.sardine.impl.SardineException;
@@ -68,8 +69,10 @@ import com.github.sardine.util.SardineUtil;
  * @param <FS>
  *            WebdavFileSystem implementation
  */
-public class WebdavFileObject<FS extends WebdavFileSystem> extends HttpFileObject<FS> {
+public class WebdavFileObject<FS extends WebdavFileSystem> extends AbstractFileObject<FS> {
 
+	private String userAgent;
+	
     final Set<QName> VERSION_PROPERTIES = new HashSet<QName>(
             Arrays.asList(new QName[] { DavResources.COMMENT, DavResources.CREATOR_DISPLAYNAME, DavResources.CHECKED_IN,
                     DavResources.CHECKED_OUT, DavResources.AUTO_VERSION }));
@@ -89,6 +92,8 @@ public class WebdavFileObject<FS extends WebdavFileSystem> extends HttpFileObjec
         private void setUserName(final URLFileName fileName, final String url) throws IOException {
             String name = builder.getCreatorName(fileSystem.getFileSystemOptions());
             final String userName = fileName.getUserName();
+            userAgent = builder.getUserAgent(fileSystem.getFileSystemOptions());
+            
             HashMap<QName, String> propMap = new HashMap<QName, String>();
             if (name == null) {
                 name = userName;
@@ -156,7 +161,8 @@ public class WebdavFileObject<FS extends WebdavFileSystem> extends HttpFileObjec
 
                 // put data
                 try {
-                    sardine.put(url, ((ByteArrayOutputStream) out).toByteArray());
+                	ByteArrayInputStream in = new ByteArrayInputStream( ((ByteArrayOutputStream) out).toByteArray());
+                    sardine.put(url, in, getHeaders());
                     setUserName(fileName, url);
                 } catch (final IOException ex) {
                     if (!isCheckedIn) {
@@ -199,7 +205,8 @@ public class WebdavFileObject<FS extends WebdavFileSystem> extends HttpFileObjec
                 }
 
             } else {
-                sardine.put(url, ((ByteArrayOutputStream) out).toByteArray());
+            	ByteArrayInputStream in = new ByteArrayInputStream( ((ByteArrayOutputStream) out).toByteArray());
+                sardine.put(url, in, getHeaders());
                 try {
                     setUserName(fileName, url);
                 } catch (final IOException e) {
@@ -481,13 +488,27 @@ public class WebdavFileObject<FS extends WebdavFileSystem> extends HttpFileObjec
     protected FileContentInfoFactory getFileContentInfoFactory() {
         return new WebdavFileContentInfoFactory();
     }
+    
+    protected String getUserAgent() {
+        return userAgent;
+    }
 
+    protected Map<String,String> getHeaders() {
+    	TreeMap<String, String> headers = new TreeMap<>();
+    	headers.put("User-Agent", this.getUserAgent());
+    	headers.put("Cache-control", "no-cache");
+        headers.put("Cache-store", "no-store");
+        headers.put("Pragma", "no-cache");
+        headers.put("Expires", "0");
+        return headers;
+    }
+    
     @Override
     protected InputStream doGetInputStream() throws Exception {
         InputStream stream = null;
 
         try {
-            stream = sardine.get(getHostRelativeUrl());
+            stream = sardine.get(getHostRelativeUrl(), getHeaders());
         } catch (SardineException e) {
             int code = e.getStatusCode();
             if (code == HttpStatus.SC_NOT_FOUND) {
@@ -599,21 +620,4 @@ public class WebdavFileObject<FS extends WebdavFileSystem> extends HttpFileObjec
         return out;
     }
 
-    /**
-     * Prepares a Method object.
-     *
-     * @param method
-     *            the HttpMethod.
-     * @throws FileSystemException
-     *             if an error occurs encoding the uri.
-     */
-    @Override
-    protected void setupMethod(final HttpRequestBase method) throws FileSystemException {
-        super.setupMethod(method);
-        ;
-        method.addHeader("Cache-control", "no-cache");
-        method.addHeader("Cache-store", "no-store");
-        method.addHeader("Pragma", "no-cache");
-        method.addHeader("Expires", "0");
-    }
 }
