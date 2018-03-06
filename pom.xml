@@ -403,6 +403,11 @@
         <version>1.16.1</version>
       </dependency>
       <dependency>
+        <groupId>org.apache.jackrabbit</groupId>
+        <artifactId>jackrabbit-webdav</artifactId>
+        <version>1.6.5</version>
+      </dependency>
+      <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpcore</artifactId>
         <version>4.4.4</version>
@@ -519,6 +524,19 @@
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpcore-nio</artifactId>
         <version>4.4.9</version>
+      </dependency>
+      <!-- Test WebDAV with Apache Jackrabbit -->
+      <dependency>
+        <groupId>org.apache.jackrabbit</groupId>
+        <artifactId>jackrabbit-standalone</artifactId>
+        <version>1.7.5</version>
+        <exclusions>
+          <exclusion>
+            <!-- provides everything inlined. -->
+            <groupId>*</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <!-- HDFS test dependencies -->
       <dependency>
