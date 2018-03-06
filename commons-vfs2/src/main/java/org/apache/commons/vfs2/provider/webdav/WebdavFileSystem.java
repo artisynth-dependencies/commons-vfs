@@ -26,6 +26,7 @@ import org.apache.commons.vfs2.FileSystemOptions;
 import org.apache.commons.vfs2.provider.AbstractFileName;
 import org.apache.commons.vfs2.provider.DefaultURLStreamHandler;
 import org.apache.commons.vfs2.provider.GenericFileName;
+import org.apache.commons.vfs2.provider.http.HttpConnectionObject;
 import org.apache.commons.vfs2.provider.http.HttpFileSystem;
 
 /**
@@ -34,13 +35,13 @@ import org.apache.commons.vfs2.provider.http.HttpFileSystem;
  * @since 2.0
  */
 public class WebdavFileSystem extends HttpFileSystem {
-    protected WebdavFileSystem(final GenericFileName rootName, final HttpClient client,
+    protected WebdavFileSystem(final GenericFileName rootName, final HttpConnectionObject client,
             final FileSystemOptions fileSystemOptions) {
         super(rootName, client, fileSystemOptions);
     }
 
     @Override
-    protected HttpClient getClient() {
+    protected HttpConnectionObject getClient() {
         // make accessible
         return super.getClient();
     }

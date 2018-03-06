@@ -20,20 +20,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.HttpMethodBase;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.URIException;
-import org.apache.commons.httpclient.methods.ByteArrayRequestEntity;
-import org.apache.commons.httpclient.methods.RequestEntity;
-import org.apache.commons.httpclient.params.HttpMethodParams;
-import org.apache.commons.httpclient.util.DateUtil;
 import org.apache.commons.vfs2.FileContentInfoFactory;
 import org.apache.commons.vfs2.FileNotFolderException;
 import org.apache.commons.vfs2.FileNotFoundException;
@@ -47,6 +41,7 @@ import org.apache.commons.vfs2.provider.URLFileName;
 import org.apache.commons.vfs2.provider.http.HttpFileObject;
 import org.apache.commons.vfs2.util.FileObjectUtils;
 import org.apache.commons.vfs2.util.MonitorOutputStream;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.jackrabbit.webdav.DavConstants;
 import org.apache.jackrabbit.webdav.DavException;
 import org.apache.jackrabbit.webdav.MultiStatus;
@@ -590,15 +585,22 @@ public class WebdavFileObject extends HttpFileObject<WebdavFileSystem> {
      * @throws URIException if the URI is in error.
      */
     @Override
-    protected void setupMethod(final HttpMethod method) throws FileSystemException, URIException {
-        final String pathEncoded = ((URLFileName) getName()).getPathQueryEncoded(this.getUrlCharset());
-        method.setPath(pathEncoded);
-        method.setFollowRedirects(this.getFollowRedirect());
-        method.setRequestHeader("User-Agent", "Jakarta-Commons-VFS");
-        method.addRequestHeader("Cache-control", "no-cache");
-        method.addRequestHeader("Cache-store", "no-store");
-        method.addRequestHeader("Pragma", "no-cache");
-        method.addRequestHeader("Expires", "0");
+    /**
+     * Prepares a Request object.
+
+     * @param method The object which gets prepared to access the file object.
+     * @throws FileSystemException if an error occurs.
+     * @since 2.0 (was package)
+     */
+    protected void setupMethod(final HttpRequestBase method) throws FileSystemException {
+        super.setupMethod(method);
+        
+        // add headers
+        method.addHeader("Cache-control", "no-cache");
+        method.addHeader("Cache-store", "no-store");
+        method.addHeader("Pragma", "no-cache");
+        method.addHeader("Expires", "0");
+        
     }
 
     private String toUrlString(final URLFileName name) {

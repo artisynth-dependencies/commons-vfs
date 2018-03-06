@@ -219,7 +219,7 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder {
      * @since 2.0
      */
     public void setMaxTotalConnections(final FileSystemOptions opts, final int maxTotalConnections) {
-        setParam(opts, HttpConnectionManagerParams.MAX_TOTAL_CONNECTIONS, Integer.valueOf(maxTotalConnections));
+        setParam(opts, HttpConnectionParams.MAX_TOTAL_CONNECTIONS, Integer.valueOf(maxTotalConnections));
     }
 
     /**
@@ -230,7 +230,7 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder {
      * @since 2.0
      */
     public int getMaxTotalConnections(final FileSystemOptions opts) {
-        return getInteger(opts, HttpConnectionManagerParams.MAX_TOTAL_CONNECTIONS, DEFAULT_MAX_CONNECTIONS);
+        return getInteger(opts, HttpConnectionParams.MAX_TOTAL_CONNECTIONS, DEFAULT_MAX_CONNECTIONS);
     }
 
     /**
@@ -241,7 +241,7 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder {
      * @since 2.0
      */
     public void setMaxConnectionsPerHost(final FileSystemOptions opts, final int maxHostConnections) {
-        setParam(opts, HttpConnectionManagerParams.MAX_HOST_CONNECTIONS, Integer.valueOf(maxHostConnections));
+        setParam(opts, HttpConnectionParams.MAX_HOST_CONNECTIONS, Integer.valueOf(maxHostConnections));
     }
 
     /**
@@ -252,7 +252,7 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder {
      * @since 2.0
      */
     public int getMaxConnectionsPerHost(final FileSystemOptions opts) {
-        return getInteger(opts, HttpConnectionManagerParams.MAX_HOST_CONNECTIONS, DEFAULT_MAX_HOST_CONNECTIONS);
+        return getInteger(opts, HttpConnectionParams.MAX_HOST_CONNECTIONS, DEFAULT_MAX_HOST_CONNECTIONS);
     }
 
     /**

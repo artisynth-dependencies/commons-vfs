@@ -30,6 +30,7 @@ import org.apache.commons.vfs2.FileSystemOptions;
 import org.apache.commons.vfs2.UserAuthenticationData;
 import org.apache.commons.vfs2.provider.GenericFileName;
 import org.apache.commons.vfs2.provider.http.HttpClientFactory;
+import org.apache.commons.vfs2.provider.http.HttpConnectionObject;
 import org.apache.commons.vfs2.provider.http.HttpFileProvider;
 import org.apache.commons.vfs2.util.UserAuthenticatorUtils;
 
@@ -80,9 +81,9 @@ public class WebdavFileProvider extends HttpFileProvider {
         final FileSystemOptions fsOpts = fileSystemOptions == null ? new FileSystemOptions() : fileSystemOptions;
 
         UserAuthenticationData authData = null;
-        HttpClient httpClient;
+        HttpConnectionObject httpClient;
         try {
-            authData = UserAuthenticatorUtils.authenticate(fsOpts, AUTHENTICATOR_TYPES);
+            authData = UserAuthenticatorUtils.authenticate(fsOpts, HttpFileProvider.AUTHENTICATOR_TYPES);
 
             httpClient = HttpClientFactory.createConnection(WebdavFileSystemConfigBuilder.getInstance(), "http",
                     rootName.getHostName(), rootName.getPort(),

@@ -241,7 +241,6 @@ public class HttpFileObject<FS extends HttpFileSystem> extends AbstractFileObjec
 
      * @param method The object which gets prepared to access the file object.
      * @throws FileSystemException if an error occurs.
-     * @throws URISyntaxException if path cannot be represented.
      * @since 2.0 (was package)
      */
     protected void setupMethod(final HttpRequestBase method) throws FileSystemException
@@ -249,9 +248,14 @@ public class HttpFileObject<FS extends HttpFileSystem> extends AbstractFileObjec
         URLFileName file = ((URLFileName) getName());
 
         // technically I only need the relative path/query
-        final URI uri = new URI(null, null, file.getPathDecoded(), file.getQueryString(), null);
+        URI uri;
+		try {
+			uri = new URI(null, null, file.getPathDecoded(), file.getQueryString(), null);
+		} catch (URISyntaxException e) {
+			throw new FileSystemException(e);
+		}
         method.setURI(uri);
-        method.setFollowRedirects(this.getFollowRedirect());
+        // method.setFollowRedirects(this.getFollowRedirect());
         method.addHeader("User-Agent", this.getUserAgent());
     }
 

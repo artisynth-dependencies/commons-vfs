@@ -64,34 +64,6 @@ public class URLFileName extends GenericFileName {
 
         return sb.toString();
     }
-
-    /**
-     * Get the path encoded suitable for url like filesystem e.g. (http, webdav).
-     *
-     * @param charset the charset used for the path encoding
-     * @return The encoded path.
-     * @throws URIException If an error occurs encoding the URI.
-     * @throws FileSystemException If some other error occurs.
-     */
-    public String getPathQueryEncoded(final String charset) throws URIException, FileSystemException {
-        String query = getQueryEncoded();
-        if (query == null) {
-            if (charset != null) {
-                return URIUtil.encodePath(getPathDecoded(), charset);
-            }
-            return URIUtil.encodePath(getPathDecoded());
-        }
-
-        final StringBuilder sb = new StringBuilder(BUFFER_SIZE);
-        if (charset != null) {
-            sb.append(URIUtil.encodePath(getPathDecoded(), charset));
-        } else {
-            sb.append(URIUtil.encodePath(getPathDecoded()));
-        }
-        sb.append("?");
-        sb.append(query);
-        return sb.toString();
-    }
     
     /**
      * Create a FileName.
