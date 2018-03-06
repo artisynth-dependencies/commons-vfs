@@ -31,6 +31,6 @@ public class WebdavFileNameParser extends HttpFileNameParser {
     }
 
     public static FileNameParser getInstance() {
-        return INSTANCE;					queryString);
+        return INSTANCE;
     }
 }

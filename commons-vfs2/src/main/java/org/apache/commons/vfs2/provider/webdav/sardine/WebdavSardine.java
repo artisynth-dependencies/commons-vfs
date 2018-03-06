@@ -1,19 +1,17 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more contributor license
- * agreements. See the NOTICE file distributed with this work for additional information regarding
- * copyright ownership. The ASF licenses this file to You under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance with the License. You may obtain a
- * copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software distributed under the License
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
- * or implied. See the License for the specific language governing permissions and limitations under
- * the License.
- * 
- *
  * Copyright 2009-2011 Jon Stevens et al.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.apache.commons.vfs2.provider.webdav.sardine;
 
@@ -52,7 +50,6 @@ import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.config.AuthSchemes;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.protocol.HttpClientContext;
@@ -92,6 +89,7 @@ import com.github.sardine.impl.methods.HttpMkCol;
 import com.github.sardine.impl.methods.HttpMove;
 import com.github.sardine.impl.methods.HttpPropFind;
 import com.github.sardine.impl.methods.HttpPropPatch;
+import com.github.sardine.impl.methods.HttpReport;
 import com.github.sardine.impl.methods.HttpSearch;
 import com.github.sardine.impl.methods.HttpUnlock;
 import com.github.sardine.model.Ace;
@@ -117,6 +115,7 @@ import com.github.sardine.model.Resourcetype;
 import com.github.sardine.model.Response;
 import com.github.sardine.model.SearchRequest;
 import com.github.sardine.model.Write;
+import com.github.sardine.report.SardineReport;
 import com.github.sardine.util.SardineUtil;
 
 /**
@@ -125,9 +124,7 @@ import com.github.sardine.util.SardineUtil;
  * @author Antonio
  *
  */
-public class WebdavSardine
-implements Sardine, SardineExtended, HttpAwareSardine
-{
+public class WebdavSardine implements Sardine, SardineExtended, HttpAwareSardine {
 
     protected static final String UTF_8 = "UTF-8";
 
@@ -1693,5 +1690,55 @@ implements Sardine, SardineExtended, HttpAwareSardine
     {
         this.client.close();
     }
+
+    @Override
+	public List<DavResource> propfind(String url, int depth, java.util.Set<QName> props) throws IOException
+	{
+		Propfind body = new Propfind();
+		Prop prop = new Prop();
+		addCustomProperties(prop, props);
+		body.setProp(prop);
+		return propfind(url, depth, body);
+	}
+
+	private void addCustomProperties(Prop prop, java.util.Set<QName> props)
+	{
+		List<Element> any = prop.getAny();
+		for (QName entry : props)
+		{
+			Element element = SardineUtil.createElement(entry);
+			any.add(element);
+		}
+	}
+	
+    protected List<DavResource> propfind(String url, int depth, Propfind body) throws IOException
+	{
+		HttpPropFind entity = new HttpPropFind(url);
+		entity.setDepth(depth < 0 ? "infinity" : Integer.toString(depth));
+		entity.setEntity(new StringEntity(SardineUtil.toXml(body), UTF_8));
+		Multistatus multistatus = this.execute(entity, new MultiStatusResponseHandler());
+		List<Response> responses = multistatus.getResponse();
+		List<DavResource> resources = new ArrayList<DavResource>(responses.size());
+		for (Response response : responses)
+		{
+			try
+			{
+				resources.add(new DavResource(response));
+			}
+			catch (URISyntaxException e)
+			{
+			}
+		}
+		return resources;
+	}
+
+	public <T> T report(String url, int depth, SardineReport<T> report) throws IOException
+	{
+		HttpReport entity = new HttpReport(url);
+		entity.setDepth(depth < 0 ? "infinity" : Integer.toString(depth));
+		entity.setEntity(new StringEntity(report.toXml(), UTF_8));
+		Multistatus multistatus = this.execute(entity, new MultiStatusResponseHandler());
+		return report.fromMultistatus(multistatus);
+	}
 
 }

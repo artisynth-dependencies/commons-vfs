@@ -16,16 +16,15 @@
  */
 package org.apache.commons.vfs2.provider.webdav;
 
-import java.net.URLStreamHandler;
 import java.util.Collection;
 
 import org.apache.commons.vfs2.Capability;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemOptions;
 import org.apache.commons.vfs2.provider.AbstractFileName;
-import org.apache.commons.vfs2.provider.AbstractFileSystem;
 import org.apache.commons.vfs2.provider.GenericFileName;
 import org.apache.commons.vfs2.provider.http.HttpConnectionClientManager;
+import org.apache.commons.vfs2.provider.http.HttpFileSystem;
 import org.apache.commons.vfs2.provider.webdav.sardine.WebdavSardine;
 import org.apache.http.HttpHost;
 
@@ -34,7 +33,7 @@ import org.apache.http.HttpHost;
  *
  * @since 2.0
  */
-public class WebdavFileSystem extends AbstractFileSystem {
+public class WebdavFileSystem extends HttpFileSystem {
     private WebdavSardine sardine;
 
     HttpConnectionClientManager manager;

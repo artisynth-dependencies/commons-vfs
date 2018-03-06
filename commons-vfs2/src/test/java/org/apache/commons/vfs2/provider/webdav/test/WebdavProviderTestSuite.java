@@ -71,14 +71,11 @@ public class WebdavProviderTestSuite extends ProviderTestSuite {
         addTests(ProviderWriteTests.class);
         addTests(ProviderWriteAppendTests.class);
         addTests(ProviderRandomReadWriteTests.class);
-        addTests(ProviderRandomSetLengthTests.class);
         addTests(ProviderRenameTests.class);
         addTests(ProviderDeleteTests.class);
         addTests(LastModifiedTests.class);
         addTests(UrlTests.class);
         addTests(UrlStructureTests.class);
-        // The class loader test requires the classes be uploaded to the webdav repo.
-        addTests(VfsClassLoaderTests.class);
         addTests(WebdavVersioningTests.class);
     }
 }
