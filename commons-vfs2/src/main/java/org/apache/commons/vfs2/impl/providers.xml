@@ -71,7 +71,6 @@
     <provider class-name="org.apache.commons.vfs2.provider.res.ResourceFileProvider">
         <scheme name="res"/>
     </provider>
-    
     <!--
     <provider class-name="org.apache.commons.vfs2.provider.webdav.WebdavFileProvider">
         <scheme name="webdav"/>

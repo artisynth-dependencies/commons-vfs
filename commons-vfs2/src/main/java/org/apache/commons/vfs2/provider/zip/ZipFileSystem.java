@@ -114,7 +114,6 @@ public class ZipFileSystem extends AbstractFileSystem {
 
                     // Attach child to parent
                     parent.attachChild(fileObj.getName());
-                    fileObj.close();  // prevent resource leak
                 }
             }
         } finally {

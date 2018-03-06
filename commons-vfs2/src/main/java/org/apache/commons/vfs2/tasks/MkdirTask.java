@@ -50,7 +50,7 @@ public class MkdirTask extends VfsTask {
 
         try {
             final FileObject dir = resolveFile(dirName);
-            final String message = Messages.getString("vfs.tasks/mkdir.create-folder.info", new Object[]{dir});
+            final String message = Messages.getString("vfs.tasks/mkdir.create-folder.info", dir);
             log(message);
             dir.createFolder();
         } catch (final FileSystemException e) {

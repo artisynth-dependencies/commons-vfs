@@ -240,7 +240,6 @@ public class VFSClassLoader extends SecureClassLoader {
                 final CodeSource parentcs = new CodeSource(parent.getURL(), parent.getContent().getCertificates());
                 permCollect = super.getPermissions(parentcs);
                 copyPermissions(permCollect, combi);
-                parent.close();  // prevent leaky resources
             }
 
             return combi;

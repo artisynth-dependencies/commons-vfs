@@ -110,8 +110,6 @@ public class TarFileSystem extends AbstractFileSystem {
 
                     // Attach child to parent
                     parent.attachChild(fileObj.getName());
-                    // XXX should we close the file here?
-                    fileObj.close();  // prevent resource leak
                 }
             }
         } catch (final IOException e) {

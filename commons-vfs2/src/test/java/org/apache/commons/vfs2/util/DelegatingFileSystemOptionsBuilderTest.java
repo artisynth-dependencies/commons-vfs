@@ -103,8 +103,10 @@ public class DelegatingFileSystemOptionsBuilderTest {
         }
     }
 
-    private static String[] schemes = new String[] { "webdav", "http", "ftp", "file", "zip", "tar", "tgz", "bz2", "gz",
+    private static String[] schemes = new String[] { "http", "ftp", "file", "zip", "tar", "tgz", "bz2", "gz",
             "jar", "tmp", "ram" };
+    //    { "webdav", "http", "ftp", "file", "zip", "tar", "tgz", "bz2", "gz",
+    //        "jar", "tmp", "ram" };
 
     @Test
     public void testConfiguration() throws Exception {

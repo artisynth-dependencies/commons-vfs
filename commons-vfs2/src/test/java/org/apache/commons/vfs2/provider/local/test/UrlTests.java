@@ -34,8 +34,7 @@ public class UrlTests extends AbstractProviderTestCase {
      */
     public void testHashFindFiles() throws Exception {
         final FileSystemManager fsManager = VFS.getManager();
-        if (fsManager == null) 
-        {
+        if (fsManager == null) {
             fail("Cannot resolve file system manager");
         }
 

@@ -144,6 +144,12 @@
       <artifactId>httpcore-nio</artifactId>
       <scope>test</scope>
     </dependency>
+    <!-- Test WebDAV with Apache Jackrabbit-->
+    <dependency>
+      <groupId>org.apache.jackrabbit</groupId>
+      <artifactId>jackrabbit-standalone</artifactId>
+      <scope>test</scope>
+    </dependency>
     <!-- Test HDFS with Apache Hadoop -->
     <dependency>
       <groupId>org.apache.hadoop</groupId>
