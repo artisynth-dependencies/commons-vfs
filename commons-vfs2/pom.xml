@@ -86,9 +86,9 @@
       <optional>true</optional>
     </dependency>
     <dependency>
-	  <groupId>com.github.lookfirst</groupId>
-	  <artifactId>sardine</artifactId>
-	  <version>5.6</version>
+      <groupId>com.github.lookfirst</groupId>
+      <artifactId>sardine</artifactId>
+      <version>5.6</version>
     </dependency>
 
     <dependency>
@@ -503,7 +503,7 @@
       </build>
     </profile>
 
-	<profile>
+    <profile>
       <id>javadoc</id>
       <activation>
         <activeByDefault>false</activeByDefault>

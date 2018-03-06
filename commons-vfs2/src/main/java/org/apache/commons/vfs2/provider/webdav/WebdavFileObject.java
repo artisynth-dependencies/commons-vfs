@@ -1,16 +1,18 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more contributor license
- * agreements. See the NOTICE file distributed with this work for additional information regarding
- * copyright ownership. The ASF licenses this file to You under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance with the License. You may obtain a
- * copy of the License at
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the License
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
- * or implied. See the License for the specific language governing permissions and limitations under
- * the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.apache.commons.vfs2.provider.webdav;
 
@@ -62,12 +64,9 @@ import com.github.sardine.util.SardineUtil;
 /**
  * Webdav file object based on Sardine
  * 
- * @author Antonio
  * @param <FS> WebdavFileSystem implementation
  */
-public class WebdavFileObject<FS extends WebdavFileSystem>
-    extends AbstractFileObject<FS>
-{
+public class WebdavFileObject<FS extends WebdavFileSystem> extends AbstractFileObject<FS> {
 
     final Set<QName> VERSION_PROPERTIES = new HashSet<QName>( Arrays.asList( new QName[] {
         DavResources.COMMENT,
@@ -76,36 +75,26 @@ public class WebdavFileObject<FS extends WebdavFileSystem>
         DavResources.CHECKED_OUT,
         DavResources.AUTO_VERSION } ) );
 
-    public class WebdavOutputStream
-        extends MonitorOutputStream
-    {
+    public class WebdavOutputStream extends MonitorOutputStream {
         WebdavFileObject<FS> file;
 
-        public WebdavOutputStream( final WebdavFileObject<FS> file )
-        {
+        public WebdavOutputStream( final WebdavFileObject<FS> file {
             super( new ByteArrayOutputStream() );
             this.file = file;
         }
 
-        private boolean createVersion( final String urlString )
-        {
+        private boolean createVersion( final String urlString ) {
             return sardine.createVersion( urlString );
         }
 
-        private void setUserName( final URLFileName fileName, final String url )
-            throws IOException
-        {
+        private void setUserName( final URLFileName fileName, final String url ) throws IOException {
             String name = builder.getCreatorName( fileSystem.getFileSystemOptions() );
             final String userName = fileName.getUserName();
             HashMap<QName, String> propMap = new HashMap<QName, String>();
-            if ( name == null )
-            {
+            if ( name == null ) {
                 name = userName;
-            }
-            else
-            {
-                if ( userName != null && !userName.equals( name ) )
-                {
+            } else {
+                if ( userName != null && !userName.equals( name ) ) {
                     final String comment = "Modified by user " + userName;
                     propMap.put( DavResources.COMMENT, comment );
                 }
@@ -117,30 +106,26 @@ public class WebdavFileObject<FS extends WebdavFileSystem>
 
         /**
          * On close, the file is written
+         *
          * @throws IOException if there is a write error
          * @see org.apache.commons.vfs2.util.MonitorOutputStream#onClose()
          */
         @Override
-        protected void onClose()
-            throws IOException
-        {
+        protected void onClose()  throws IOException {
             final URLFileName fileName = (URLFileName) getName();
             String url = getFullUrl( fileName, true );
 
             // check if versioning
-            if ( builder.isVersioning( fileSystem.getFileSystemOptions() ) )
-            {
+            if ( builder.isVersioning( fileSystem.getFileSystemOptions() ) ) {
                 boolean fileExists = sardine.exists( url );
                 boolean isCheckedIn = true;
 
-                if ( fileExists )
-                {
+                if ( fileExists ) {
 
                     // look for version properties
                     Map<QName, String> props = sardine.getProperties( url, VERSION_PROPERTIES );
 
-                    if ( props != null )
-                    {
+                    if ( props != null ) {
 
                         // look for CHECKED_OUT
                         String checkout = props.get( DavResources.CHECKED_OUT );
@@ -759,4 +744,22 @@ public class WebdavFileObject<FS extends WebdavFileSystem>
         return out;
     }
 
+    /**
+     * Prepares a Method object.
+     *
+     * @param method the HttpMethod.
+     * @throws FileSystemException if an error occurs encoding the uri.
+     * @throws URIException if the URI is in error.
+     */
+    @Override
+    protected void setupMethod(final HttpMethod method) throws FileSystemException, URIException {
+        final String pathEncoded = ((URLFileName) getName()).getPathQueryEncoded(this.getUrlCharset());
+        method.setPath(pathEncoded);
+        method.setFollowRedirects(this.getFollowRedirect());
+        method.setRequestHeader("User-Agent", "Jakarta-Commons-VFS");
+        method.addRequestHeader("Cache-control", "no-cache");
+        method.addRequestHeader("Cache-store", "no-store");
+        method.addRequestHeader("Pragma", "no-cache");
+        method.addRequestHeader("Expires", "0");
+    }
 }

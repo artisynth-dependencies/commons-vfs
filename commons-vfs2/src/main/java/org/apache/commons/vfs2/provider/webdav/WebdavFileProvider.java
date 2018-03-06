@@ -1,16 +1,18 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more contributor license
- * agreements. See the NOTICE file distributed with this work for additional information regarding
- * copyright ownership. The ASF licenses this file to You under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance with the License. You may obtain a
- * copy of the License at
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the License
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
- * or implied. See the License for the specific language governing permissions and limitations under
- * the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.apache.commons.vfs2.provider.webdav;
 
@@ -38,57 +40,50 @@ import org.apache.commons.vfs2.util.UserAuthenticatorUtils;
  *
  * @since 2.0
  */
-public class WebdavFileProvider extends HttpFileProvider
-{
+public class WebdavFileProvider extends HttpFileProvider {
     
     /**
      * The authenticator types used by the WebDAV provider.
      * 
+     * @deprecated Might be removed in the next major version.
      */
-    public static final UserAuthenticationData.Type[] AUTHENTICATOR_TYPES = new UserAuthenticationData.Type[]
-        {
-            UserAuthenticationData.USERNAME, UserAuthenticationData.PASSWORD
-        };
+    @Deprecated
+    public static final UserAuthenticationData.Type[] AUTHENTICATOR_TYPES = new UserAuthenticationData.Type[] {
+            UserAuthenticationData.USERNAME, UserAuthenticationData.PASSWORD };
    
     /** The capabilities of the WebDAV provider */
     protected static final Collection<Capability> capabilities = Collections
-        .unmodifiableCollection( Arrays.asList( new Capability[] {
-            Capability.CREATE,
-            Capability.DELETE,
-            Capability.RENAME,
-            Capability.GET_TYPE,
-            Capability.LIST_CHILDREN,
-            Capability.READ_CONTENT,
-            Capability.URI,
-            Capability.WRITE_CONTENT,
-            Capability.GET_LAST_MODIFIED,
-            Capability.ATTRIBUTES,
-            Capability.RANDOM_ACCESS_READ,
-            Capability.DIRECTORY_READ_CONTENT, } ) );
+            .unmodifiableCollection(Arrays.asList(new Capability[] { Capability.CREATE, Capability.DELETE,
+                    Capability.RENAME, Capability.GET_TYPE, Capability.LIST_CHILDREN, Capability.READ_CONTENT,
+                    Capability.URI, Capability.WRITE_CONTENT, Capability.GET_LAST_MODIFIED, Capability.ATTRIBUTES,
+                    Capability.RANDOM_ACCESS_READ, Capability.DIRECTORY_READ_CONTENT, }));
 
-    public WebdavFileProvider()
-    {
+    public WebdavFileProvider() {
         super();
 
-        setFileNameParser( WebdavFileNameParser.getInstance() );
+        setFileNameParser(WebdavFileNameParser.getInstance());
     }
 
     /**
-     * Internal.  Creates a {@link FileSystem}.
+     * Creates a {@link FileSystem}.
+     * <p>
+     * If you're looking at this method and wondering how to get a FileSystemOptions object bearing the proxy host and
+     * credentials configuration through to this method so it's used for resolving a
+     * {@link org.apache.commons.vfs2.FileObject FileObject} in the FileSystem, then be sure to use correct signature of
+     * the {@link org.apache.commons.vfs2.FileSystemManager FileSystemManager} resolveFile method.
+     *
      * @see org.apache.commons.vfs2.impl.DefaultFileSystemManager#resolveFile(FileObject, String, FileSystemOptions)
      */
     @Override
-    protected FileSystem doCreateFileSystem( final FileName name, final FileSystemOptions fileSystemOptions )
-        throws FileSystemException
-    {
+    protected FileSystem doCreateFileSystem(final FileName name, final FileSystemOptions fileSystemOptions)
+            throws FileSystemException {
         // Create the file system
         final GenericFileName rootName = (GenericFileName) name;
         final FileSystemOptions fsOpts = fileSystemOptions == null ? new FileSystemOptions() : fileSystemOptions;
 
         UserAuthenticationData authData = null;
         HttpConnectionClientManager httpClientManager;
-        try
-        {
+        try {
             authData = UserAuthenticatorUtils.authenticate( fsOpts, AUTHENTICATOR_TYPES );
 
             httpClientManager = HttpClientManagerFactory
@@ -105,38 +100,30 @@ public class WebdavFileProvider extends HttpFileProvider
             // Test for successful connection to host
             HttpConnectionClient client = httpClientManager.createClient();
 
-            try
-            {
+            try {
                 testConnection( client );
-            }
-            catch ( Exception e )
-            {
+            } catch ( Exception e ) {
                 // can't connect to "base", but that might not be an issue..
                 getLogger().warn( "warning: webdav cannot connect to " + name + ", but webdav might still work", e );
             }
-        }
-        finally
-        {
-            UserAuthenticatorUtils.cleanup( authData );
+        } finally {
+            UserAuthenticatorUtils.cleanup(authData);
         }
 
         return new WebdavFileSystem( rootName, httpClientManager, fsOpts );
     }
 
     @Override
-    public FileSystemConfigBuilder getConfigBuilder()
-    {
+    public FileSystemConfigBuilder getConfigBuilder() {
         return WebdavFileSystemConfigBuilder.getInstance();
     }
 
     @Override
-    public Collection<Capability> getCapabilities()
-    {
+    public Collection<Capability> getCapabilities() {
         return capabilities;
     }
 
-    protected String getUrlScheme()
-    {
+    protected String getUrlScheme() {
         return "http";
     }
 }
