@@ -225,7 +225,7 @@ public class HttpFileObject<FS extends HttpFileSystem> extends AbstractFileObjec
         // Use the HEAD method to probe the file.
         HttpHead method = new HttpHead();
         setupMethod(method);
-        final HttpConnectionObject client = getAbstractFileSystem().getClient();
+        final HttpConnectionClient client = getAbstractFileSystem().getClient();
         
         // final int status = client.execute(method);
         headResponse = client.execute(method);
@@ -238,9 +238,8 @@ public class HttpFileObject<FS extends HttpFileSystem> extends AbstractFileObjec
 
     /**
      * Prepares a Request object.
-
-     * @param method The object which gets prepared to access the file object.
-     * @throws FileSystemException if an error occurs.
+     * @param method the HTTP method to configure
+     * @throws FileSystemException if there is any error in building the request (e.g. an invalid url syntax)
      * @since 2.0 (was package)
      */
     protected void setupMethod(final HttpRequestBase method) throws FileSystemException
@@ -248,12 +247,12 @@ public class HttpFileObject<FS extends HttpFileSystem> extends AbstractFileObjec
         URLFileName file = ((URLFileName) getName());
 
         // technically I only need the relative path/query
-        URI uri;
-		try {
-			uri = new URI(null, null, file.getPathDecoded(), file.getQueryString(), null);
-		} catch (URISyntaxException e) {
-			throw new FileSystemException(e);
-		}
+        URI uri = null;
+        try {
+            uri = new URI(null, null, file.getPathDecoded(), file.getQueryString(), null);
+        } catch (URISyntaxException e) {
+            throw new FileSystemException("Invalid URI syntax", e);
+        }
         method.setURI(uri);
         // method.setFollowRedirects(this.getFollowRedirect());
         method.addHeader("User-Agent", this.getUserAgent());

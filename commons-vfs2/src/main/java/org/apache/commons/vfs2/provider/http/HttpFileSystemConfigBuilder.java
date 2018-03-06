@@ -38,6 +38,8 @@ import org.apache.http.ssl.TrustStrategy;
 public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder {
     protected static final String KEY_FOLLOW_REDIRECT = "followRedirect";
 
+    protected static final String KEY_CIRCULAR_REDIRECTS_ALLOWED = "http.circularRedirect";
+
     protected static final String KEY_USER_AGENT = "userAgent";
 
     private static final HttpFileSystemConfigBuilder BUILDER = new HttpFileSystemConfigBuilder();
@@ -51,6 +53,8 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder {
     private static final int DEFAULT_SO_TIMEOUT = 0;
 
     private static final boolean DEFAULT_FOLLOW_REDIRECT = true;
+
+    private static final boolean DEFAULT_CIRCULAR_REDIRECTS_ALLOWED = false;
 
     private static final String DEFAULT_USER_AGENT = "Jakarta-Commons-VFS";
 
@@ -212,8 +216,31 @@ public class HttpFileSystemConfigBuilder extends FileSystemConfigBuilder {
     }
 
     /**
-     * Sets the maximum number of connections allowed.
+     * Sets whether to follow circular redirects for the connection.
      *
+     * @param opts
+     *            The FileSystem options.
+     * @param set {@code true} to follow circular, {@code false} not to.
+    
+     */
+    public void getCircularRedirectsAllowed( final FileSystemOptions opts, boolean set ) {
+        setParam( opts, KEY_CIRCULAR_REDIRECTS_ALLOWED, set );
+    }
+
+    /**
+     * Gets whether to follow circular redirects for the connection.
+     *
+     * @param opts
+     *            The FileSystem options.
+     * @return {@code true} to follow redirects, {@code false} not to.
+    
+     */
+    public boolean getCircularRedirectsAllowed( final FileSystemOptions opts ) {
+        return getBoolean( opts, KEY_CIRCULAR_REDIRECTS_ALLOWED, DEFAULT_CIRCULAR_REDIRECTS_ALLOWED );
+    }
+
+    /**
+     * Sets the maximum number of connections allowed.
      * @param opts The FileSystem options.
      * @param maxTotalConnections The maximum number of connections.
      * @since 2.0
