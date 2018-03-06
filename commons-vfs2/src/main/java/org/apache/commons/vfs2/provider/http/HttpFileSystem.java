@@ -30,7 +30,7 @@ import org.apache.commons.vfs2.provider.GenericFileName;
  */
 public class HttpFileSystem extends AbstractFileSystem {
     private final HttpConnectionClientManager clientManager;
-    private final HttpConnectionClient client;
+    private final HttpConnectionClient client;  // single client for all communications
     
     protected HttpFileSystem(final GenericFileName rootName, final HttpConnectionClientManager clientManager,
             final FileSystemOptions fileSystemOptions) {

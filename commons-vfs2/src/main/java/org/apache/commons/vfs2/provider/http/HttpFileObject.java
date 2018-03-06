@@ -21,7 +21,6 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Map;
 
 import org.apache.commons.vfs2.FileContentInfoFactory;
 import org.apache.commons.vfs2.FileNotFoundException;
@@ -252,7 +251,7 @@ public class HttpFileObject<FS extends HttpFileSystem> extends AbstractFileObjec
         try {
             uri = new URI(null, null, file.getPathDecoded(), file.getQueryString(), null);
         } catch (URISyntaxException e) {
-            throw new FileSystemException(e);
+            throw new FileSystemException("Invalid URI syntax", e);
         }
         method.setURI(uri);
         // method.setFollowRedirects(this.getFollowRedirect());
