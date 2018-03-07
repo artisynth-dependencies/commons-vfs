@@ -44,7 +44,7 @@ ArtiSynth Build Instructions
 =============================
 To build for artisynth, generate a fat jar using the command
 ```
-> mvn package
+> mvn package -DskipTests
 ```
 Copy the jar generated `commons-vfs2/target/commons-vfs2-<version>-SNAPSHOT.jar` to the desired location
 
