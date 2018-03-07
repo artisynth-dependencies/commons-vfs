@@ -40,15 +40,7 @@
  |                                                                      |
  +======================================================================+
 --->
-ArtiSynth Build Instructions
-=============================
-To build for artisynth, generate a fat jar using the command
-```
-> mvn package
-```
-Copy the jar generated `commons-vfs2/target/commons-vfs2-<version>-SNAPSHOT.jar` to the desired location
-
-Apache Commons VFS Project
+Apache Commons VFS
 ===================
 
 [![Build Status](https://travis-ci.org/apache/commons-vfs2.svg?branch=master)](https://travis-ci.org/apache/commons-vfs2)
@@ -61,9 +53,9 @@ Apache Commons VFS is a Virtual File System library.
 Documentation
 -------------
 
-More information can be found on the [Apache Commons VFS Project homepage](https://commons.apache.org/proper/commons-vfs2).
+More information can be found on the [Apache Commons VFS homepage](https://commons.apache.org/proper/commons-vfs2).
 The [JavaDoc](https://commons.apache.org/proper/commons-vfs2/javadocs/api-release) can be browsed.
-Questions related to the usage of Apache Commons VFS Project should be posted to the [user mailing list][ml].
+Questions related to the usage of Apache Commons VFS should be posted to the [user mailing list][ml].
 
 Where can I get the latest release?
 -----------------------------------
@@ -100,7 +92,7 @@ See the `NOTICE.txt` file for required notices and attributions.
 
 Donations
 ---------
-You like Apache Commons VFS Project? Then [donate back to the ASF](https://www.apache.org/foundation/contributing.html) to support the development.
+You like Apache Commons VFS? Then [donate back to the ASF](https://www.apache.org/foundation/contributing.html) to support the development.
 
 Additional Resources
 --------------------

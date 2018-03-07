@@ -40,30 +40,22 @@
  |                                                                      |
  +======================================================================+
 --->
-ArtiSynth Build Instructions
-=============================
-To build for artisynth, generate a fat jar using the command
-```
-> mvn package
-```
-Copy the jar generated `commons-vfs2/target/commons-vfs2-<version>-SNAPSHOT.jar` to the desired location
-
-Apache Commons VFS Project
+Apache Commons VFS Distribution
 ===================
 
-[![Build Status](https://travis-ci.org/apache/commons-vfs2.svg?branch=master)](https://travis-ci.org/apache/commons-vfs2)
-[![Coverage Status](https://coveralls.io/repos/apache/commons-vfs2/badge.svg?branch=master)](https://coveralls.io/r/apache/commons-vfs2)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.apache.commons/commons-vfs2/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.apache.commons/commons-vfs2/)
+[![Build Status](https://travis-ci.org/apache/commons-vfs2-distribution.svg?branch=master)](https://travis-ci.org/apache/commons-vfs2-distribution)
+[![Coverage Status](https://coveralls.io/repos/apache/commons-vfs2-distribution/badge.svg?branch=master)](https://coveralls.io/r/apache/commons-vfs2-distribution)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.apache.commons/commons-vfs2-distribution/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.apache.commons/commons-vfs2-distribution/)
 [![License](http://img.shields.io/:license-apache-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
 
-Apache Commons VFS is a Virtual File System library.
+Apache Commons VFS is a Virtual File System library - Distribution archives.
 
 Documentation
 -------------
 
-More information can be found on the [Apache Commons VFS Project homepage](https://commons.apache.org/proper/commons-vfs2).
+More information can be found on the [Apache Commons VFS Distribution homepage](https://commons.apache.org/proper/commons-vfs2).
 The [JavaDoc](https://commons.apache.org/proper/commons-vfs2/javadocs/api-release) can be browsed.
-Questions related to the usage of Apache Commons VFS Project should be posted to the [user mailing list][ml].
+Questions related to the usage of Apache Commons VFS Distribution should be posted to the [user mailing list][ml].
 
 Where can I get the latest release?
 -----------------------------------
@@ -74,7 +66,7 @@ Alternatively you can pull it from the central Maven repositories:
 ```xml
 <dependency>
   <groupId>org.apache.commons</groupId>
-  <artifactId>commons-vfs2</artifactId>
+  <artifactId>commons-vfs2-distribution</artifactId>
   <version>2.2</version>
 </dependency>
 ```
@@ -100,7 +92,7 @@ See the `NOTICE.txt` file for required notices and attributions.
 
 Donations
 ---------
-You like Apache Commons VFS Project? Then [donate back to the ASF](https://www.apache.org/foundation/contributing.html) to support the development.
+You like Apache Commons VFS Distribution? Then [donate back to the ASF](https://www.apache.org/foundation/contributing.html) to support the development.
 
 Additional Resources
 --------------------
